@@ -1,6 +1,6 @@
 /*
 	Name:	Guy Shaked
-			Yuval Hazan
+			Daniel Mar
 
 	ID:		205717952
 			205487515
