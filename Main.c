@@ -17,13 +17,12 @@
 void main() {
 
 
-/*	
 		puts("Please enter one of the following commands:\n"
 		"add - apt, find - apt, buy - apt, delete - apt or exit\n"
 		"For reconstruction commands, please enter :\n"
 		"!!, !num, history, short_history or !num ^ str1 ^ str2\n");
 
-	*/
+
 
 	STOCK stock;
 	makeEmptyStockList(&stock);
@@ -36,6 +35,8 @@ void main() {
 	getCommand(&aptList, &stock);
 
 	printList(&aptList);
+
+	
 
 }
 
