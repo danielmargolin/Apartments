@@ -12,7 +12,6 @@
 */
 #include "Functions.h"
 
-
 void getCommand(APT_LIST* aptList, STOCK* stock) {
 
 	char command[COMMAND];
@@ -67,7 +66,7 @@ void interpretation(APT_LIST* aptList, char* command) {
 	switch (command[0]) {
 
 	case 'f':
-		findApt(command);
+		findApt(aptList,command);
 		break;
 	case 'a':
 		addApt(aptList, &command[strlen(ADD) + 1]);
@@ -83,10 +82,67 @@ void interpretation(APT_LIST* aptList, char* command) {
 		break;
 	}
 }
+//Should be deleted - this function is just for testing the code.
+//-------------------------------------------------------------
+APT_LIST* findAllApt(APT_LIST* apt, int* param) {
+	return apt;
+}
+//-------------------------------------------------------------
 
-void findApt(char* command) {
+APT_LIST* findMaxPrice(APT_LIST* apt, int price) {
+	return apt;
+}
 
+APT_LIST* findMinPrice(APT_LIST* apt, int price) {
+	return NULL;
+}
 
+APT_LIST* findDate(APT_LIST* apt, int date) {
+	return apt;
+}
+
+APT_LIST* findMaxRooms(APT_LIST* apt, int numOfRooms) {
+	return apt;
+}
+
+APT_LIST* findMinRooms(APT_LIST* apt, int* numOfRooms) {
+	return apt;
+}
+
+APT_LIST* findLastDays(APT_LIST* apt, int* numOfDays) {
+	return apt;
+}
+
+FIND_FUNCTION* getFindFunctions(char* command, int* size, int** params) {
+	FIND_FUNCTION* findFunctions = malloc(10 * sizeof(FIND_FUNCTION));
+	*size = 0;
+
+	char* currentWord = strtok(command, DELIMETERS);
+	currentWord = strtok(NULL, DELIMETERS);
+	while (currentWord != NULL) {
+		if (strcmp(currentWord, "MaxPrice") == 0) {
+			findFunctions[*size] = &findMaxPrice;
+			params[*size] = atoi(strtok(NULL, DELIMETERS));
+		}
+		*size++;
+		currentWord = strtok(NULL, DELIMETERS);
+	}
+	return findFunctions;
+}
+
+void findApt(APT_LIST* aptList, char* command) {
+	int size;
+	int params[10];
+
+	APT_LIST* (**findFunctions)(APT_LIST*, int);
+	findFunctions = getFindFunctions(command, &size, &params);
+
+	APT_LIST* resultApt = aptList;
+
+	for (int i = 0; i < size; i++) {
+		resultApt = (*findFunctions[i])(resultApt, params[i]);
+	}
+	return resultApt;
 }
 
 void addApt(APT_LIST* aptList, char* command) {
