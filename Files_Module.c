@@ -1,9 +1,9 @@
 /*
 	Name:	Guy Shaked
-			Yuval Hazan
+			Daniel Margolin
 
 	ID:		205717952
-			205487515
+			314899436
 
 	Date: 20/10/2020
 
