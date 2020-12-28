@@ -106,6 +106,8 @@ typedef struct _stock {
 
 } STOCK;
 
+typedef APT_LIST(*FIND_FUNCTION)(APT_LIST, int);
+
 
 
 #endif

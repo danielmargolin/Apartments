@@ -20,16 +20,33 @@
 #ifndef ___FUNCTIONS_H___
 #define ___FUNCTIONS_H___
 
-
 /*************** Functions Prototypes ****************/
 
 void getCommand(APT_LIST* aptList, STOCK* stock);
 
 void interpretation(APT_LIST* aptList, char* command);
 
-void findApt(char* command);
+void findApt(APT_LIST* aptList, char* command);
+
+APT_LIST findMaxPrice(APT_LIST apt, int price);
+
+APT_LIST findMinPrice(APT_LIST apt, int price);
+
+APT_LIST findDate(APT_LIST apt, int date);
+
+APT_LIST findMaxRooms(APT_LIST apt, int numOfRooms);
+
+APT_LIST findMinRooms(APT_LIST apt, int numOfRooms);
+
+APT_LIST findLastDays(APT_LIST apt, int numOfDays);
+
+FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params);
+
+APT_LIST findAllApt(APT_LIST apt, int param);
 
 void addApt(APT_LIST* aptList, char* command);
+
+void aptOut(APT_LIST* apt, APT* node);
 
 void buy();
 

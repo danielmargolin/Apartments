@@ -12,7 +12,6 @@
 */
 #include "Functions.h"
 
-
 void getCommand(APT_LIST* aptList, STOCK* stock) {
 
 	char command[COMMAND];
@@ -52,7 +51,7 @@ void addToStock(STOCK* stock, char* command, uint add) {
 	else {
 
 		addToHeadStockList(stock, makeStockNode(short_term_history[N - 1]));
-		for (i = N-1; i > 0; i--) {
+		for (i = N - 1; i > 0; i--) {
 
 			short_term_history[i] = (char*)realloc(short_term_history[i], strlen(short_term_history[i - 1]));
 			strcpy(short_term_history[i], short_term_history[i - 1]);
@@ -67,7 +66,7 @@ void interpretation(APT_LIST* aptList, char* command) {
 	switch (command[0]) {
 
 	case 'f':
-		findApt(command);
+		findApt(aptList, command);
 		break;
 	case 'a':
 		addApt(aptList, &command[strlen(ADD) + 1]);
@@ -84,9 +83,183 @@ void interpretation(APT_LIST* aptList, char* command) {
 	}
 }
 
-void findApt(char* command) {
+APT_LIST findMaxPrice(APT_LIST apt, int price) {
+
+	APT* cur = apt.head;
+	APT* temp;
+	uint i, count = 0;
+	for (i = 0; i < apt.size && cur; i++) {
+
+		if (cur->price > price) {
+
+			temp = cur;
+			cur = cur->next;
+			aptOut(&apt, temp);
+		}
+		else {
+
+			cur = cur->next;
+			count++;
+		}
+
+	}
+	apt.size = count;
+	return apt;
+}
+
+void aptOut(APT_LIST* apt, APT* node) {
+
+	if (node->next && node->prev) {
+
+		node->prev->next = node->next;
+		node->next->prev = node->prev;
+	}
+	else if (node->next) {
+
+		apt->head = node->next;
+		apt->head->prev = NULL;
+	}
+	else if (node->prev) {
+
+		apt->tail = node->prev;
+		apt->tail->next = NULL;
+	}
+	else
+		apt->head = apt->tail = NULL;
+
+	free(node);
+}
+
+APT_LIST findMinPrice(APT_LIST apt, int price) {
+
+	APT* cur = apt.head;
+	APT* temp;
+	uint i, count = 0;
+	for (i = 0; i < apt.size && cur; i++) {
+
+		if (cur->price < price) {
+
+			temp = cur;
+			cur = cur->next;
+			aptOut(&apt, temp);
+		}
+		else {
+
+			cur = cur->next;
+			count++;
+		}
+
+	}
+	apt.size = count;
+	return apt;
+}
+
+APT_LIST findDate(APT_LIST apt, int date) {
+	return apt;
+}
+
+APT_LIST findMaxRooms(APT_LIST apt, int numOfRooms) {
+
+	APT* cur = apt.head;
+	APT* temp;
+	uint i, count = 0;
+	for (i = 0; i < apt.size && cur; i++) {
+
+		if (cur->rooms > numOfRooms) {
+
+			temp = cur;
+			cur = cur->next;
+			aptOut(&apt, temp);
+		}
+		else {
+
+			cur = cur->next;
+			count++;
+		}
+	}
+
+	apt.size = count;
+	return apt;
+}
+
+APT_LIST findMinRooms(APT_LIST apt, int numOfRooms) {
+
+	APT* cur = apt.head;
+	APT* temp;
+	uint i, count = 0;
+	for (i = 0; i < apt.size && cur; i++) {
+
+		if (cur->rooms < numOfRooms) {
+
+			temp = cur;
+			cur = cur->next;
+			aptOut(&apt, temp);
+		}
+		else {
+
+			cur = cur->next;
+			count++;
+		}
+	}
+	apt.size = count;
+	return apt;
+}
+
+APT_LIST findLastDays(APT_LIST apt, int numOfDays) {
+	return apt;
+}
+
+FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params) {
+
+	FIND_FUNCTION* findFunctions = malloc(10 * sizeof(FIND_FUNCTION));
+	(*size) = 0;
+
+	char* currentWord = strtok(command, DELIMETERS);
+
+	while (currentWord) {
+
+		if (strcmp(currentWord, "MaxPrice") == 0) {
+			findFunctions[(*size)] = &findMaxPrice;
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			(*size)++;
+		}
+		if (strcmp(currentWord, "MinPrice") == 0) {
+			findFunctions[(*size)] = &findMinPrice;
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			(*size)++;
+		}
+		if (strcmp(currentWord, "MinNumRooms") == 0) {
+			findFunctions[(*size)] = &findMinRooms;
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			(*size)++;
+		}
+		if (strcmp(currentWord, "MaxNumRooms") == 0) {
+			findFunctions[(*size)] = &findMaxRooms;
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			(*size)++;
+		}
+		currentWord = strtok(NULL, DELIMETERS);
+	}
+	return findFunctions;
+}
+
+void findApt(APT_LIST* aptList, char* command) {
 
 
+	int size;
+	int params[10];
+
+	APT_LIST(**findFunctions)(APT_LIST, int);
+	findFunctions = getFindFunctions(command, &size, params);
+	uint i;
+	APT_LIST filtered_List;
+	makeEmptyAptList(&filtered_List);
+	copyList(&filtered_List, aptList);
+	for (int i = 0; i < size; i++) {
+
+		filtered_List = (*findFunctions[i])(filtered_List, params[i]);
+	}
+	printList(&filtered_List);
 }
 
 void addApt(APT_LIST* aptList, char* command) {
@@ -108,7 +281,7 @@ void addApt(APT_LIST* aptList, char* command) {
 	}
 	address[indexAddress] = '\0';
 
-	price = atoi(strtok(&command[indexCommand],DELIMETERS));
+	price = atoi(strtok(&command[indexCommand], DELIMETERS));
 	int rooms = atoi(strtok(NULL, DELIMETERS));
 	char* d = strtok(NULL, "\0");
 	DATE date = makeDate(d);
@@ -210,18 +383,3 @@ void binaryPrint(uchar n) {
 	}
 	putchar('\n');
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
