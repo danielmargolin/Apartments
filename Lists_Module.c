@@ -13,7 +13,7 @@
 #include "Lists_Module.h"
 
 
-void addToHeadStockList(STOCK *stock, STOCK_NODE *node) {
+void addToHeadStockList(STOCK* stock, STOCK_NODE* node) {
 
 	if (!stock->head)
 		stock->head = stock->tail = node;
@@ -100,6 +100,7 @@ APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_
 	apt->date = date;
 	apt->rooms = rooms;
 	apt->database_Entry_Date = database_Entry_Date;
+
 	return apt;
 }
 
@@ -132,8 +133,15 @@ void printApt(APT* apt) {
 		apt->rooms, apt->date.day, apt->date.month, apt->date.year, ctime(&apt->database_Entry_Date));
 }
 
+void copyList(APT_LIST* target, APT_LIST* source) {
 
+	uint i;
+	APT* cur = source->head;
+	for (i = 0; (i < source->size && cur); i++) {
 
+		(target->size)++;
+		addToList(target, makeApt(cur->address, cur->code, cur->price, cur->rooms, cur->date, cur->database_Entry_Date));
+		cur = cur->next;
 
-
-
+	}
+}

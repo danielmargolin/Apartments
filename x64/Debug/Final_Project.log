@@ -1,2 +1,16 @@
-﻿  Main.c
+﻿  Files_Module.c
+C:\Users\shake\source\repos\Final_Project2\Apartments\Files_Module.c(128,19): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\shake\source\repos\Final_Project2\Apartments\Files_Module.c(128,19): message : consider using '%zd' in the format string
+C:\Users\shake\source\repos\Final_Project2\Apartments\Files_Module.c(132,18): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\shake\source\repos\Final_Project2\Apartments\Files_Module.c(132,18): message : consider using '%zd' in the format string
+C:\Users\shake\source\repos\Final_Project2\Apartments\Files_Module.c(152,36): warning C4267: '=': conversion from 'size_t' to 'sint', possible loss of data
+  Functions.c
+C:\Users\shake\source\repos\Final_Project2\Apartments\Functions.c(18,6): warning C4013: 'gets' undefined; assuming extern returning int
+C:\Users\shake\source\repos\Final_Project2\Apartments\Functions.c(254,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\Final_Project2\Apartments\Functions.c(312,65): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\shake\source\repos\Final_Project2\Apartments\Functions.c(313,11): warning C4018: '<=': signed/unsigned mismatch
+  Lists_Module.c
+C:\Users\shake\source\repos\Final_Project2\Apartments\Lists_Module.c(91,17): warning C4013: 'allocationCheck' undefined; assuming extern returning int
+  Main.c
+  Generating Code...
   Final_Project.vcxproj -> C:\Users\shake\source\repos\Final_Project2\Apartments\x64\Debug\Final_Project.exe

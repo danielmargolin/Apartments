@@ -40,5 +40,6 @@ void printApt(APT* apt);
 
 void printList(APT_LIST* lst);
 
-#endif
+void copyList(APT_LIST* target, APT_LIST* source);
 
+#endif
