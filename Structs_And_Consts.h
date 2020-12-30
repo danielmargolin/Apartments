@@ -106,9 +106,12 @@ typedef struct _stock {
 
 } STOCK;
 
-typedef APT_LIST(*FIND_FUNCTION)(APT_LIST, int);
+typedef struct find_paramas {
+	int data;
+	char* sortType;
+} FIND_PARAMS;
 
-
+typedef APT_LIST(*FIND_FUNCTION)(APT_LIST, FIND_PARAMS);
 
 #endif
 
