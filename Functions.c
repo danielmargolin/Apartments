@@ -83,7 +83,8 @@ void interpretation(APT_LIST* aptList, char* command) {
 	}
 }
 
-APT_LIST findMaxPrice(APT_LIST apt, int price) {
+APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params) {
+	int price = params.data;
 
 	APT* cur = apt.head;
 	APT* temp;
@@ -130,7 +131,8 @@ void aptOut(APT_LIST* apt, APT* node) {
 	free(node);
 }
 
-APT_LIST findMinPrice(APT_LIST apt, int price) {
+APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
+	int price = params.data;
 
 	APT* cur = apt.head;
 	APT* temp;
@@ -154,11 +156,13 @@ APT_LIST findMinPrice(APT_LIST apt, int price) {
 	return apt;
 }
 
-APT_LIST findDate(APT_LIST apt, int date) {
+APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
+	int date = params.data;
 	return apt;
 }
 
-APT_LIST findMaxRooms(APT_LIST apt, int numOfRooms) {
+APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
+	int numOfRooms = params.data;
 
 	APT* cur = apt.head;
 	APT* temp;
@@ -182,7 +186,8 @@ APT_LIST findMaxRooms(APT_LIST apt, int numOfRooms) {
 	return apt;
 }
 
-APT_LIST findMinRooms(APT_LIST apt, int numOfRooms) {
+APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
+	int numOfRooms = params.data;
 
 	APT* cur = apt.head;
 	APT* temp;
@@ -205,52 +210,59 @@ APT_LIST findMinRooms(APT_LIST apt, int numOfRooms) {
 	return apt;
 }
 
-APT_LIST findLastDays(APT_LIST apt, int numOfDays) {
+APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
+	int numOfDays = params.data;
+
 	return apt;
 }
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params) {
+FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params) {
 
 	FIND_FUNCTION* findFunctions = malloc(10 * sizeof(FIND_FUNCTION));
 	(*size) = 0;
-
 	char* currentWord = strtok(command, DELIMETERS);
 
 	while (currentWord) {
 
 		if (strcmp(currentWord, "MaxPrice") == 0) {
 			findFunctions[(*size)] = &findMaxPrice;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
 		if (strcmp(currentWord, "MinPrice") == 0) {
 			findFunctions[(*size)] = &findMinPrice;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
 		if (strcmp(currentWord, "MinNumRooms") == 0) {
 			findFunctions[(*size)] = &findMinRooms;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
 		if (strcmp(currentWord, "MaxNumRooms") == 0) {
 			findFunctions[(*size)] = &findMaxRooms;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
 		currentWord = strtok(NULL, DELIMETERS);
+		if (currentWord && (strcmp(currentWord, "s") == 0 || strcmp(currentWord, "sr") == 0)) {
+			params[(*size) - 1].sortType = currentWord;
+			currentWord = strtok(NULL, DELIMETERS);
+		}
+		else {
+			params[(*size) - 1].sortType = NULL;
+		}
 	}
 	return findFunctions;
 }
 
 void findApt(APT_LIST* aptList, char* command) {
 
-
 	int size;
-	int params[10];
+	FIND_PARAMS params[10];
 
-	APT_LIST(**findFunctions)(APT_LIST, int);
-	findFunctions = getFindFunctions(command, &size, params);
+	APT_LIST(**findFunctions)(APT_LIST, FIND_PARAMS);
+	findFunctions = getFindFunctions(command + 8, &size, &params);
 	uint i;
 	APT_LIST filtered_List;
 	makeEmptyAptList(&filtered_List);

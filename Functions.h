@@ -40,7 +40,7 @@ APT_LIST findMinRooms(APT_LIST apt, int numOfRooms);
 
 APT_LIST findLastDays(APT_LIST apt, int numOfDays);
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params);
+FIND_FUNCTION* getFindFunctions(char* command, int* size);
 
 APT_LIST findAllApt(APT_LIST apt, int param);
 
