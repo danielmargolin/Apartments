@@ -425,6 +425,7 @@ void otherCommands(APT_LIST* aptList, STOCK* stock, char* command) {
 			cur = cur->next;
 		}
 		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
+		strcpy(short_term_history[0], cur->command);
 		
 	}
 	interpretation(aptList, stock, short_term_history[0]);
