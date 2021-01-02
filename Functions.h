@@ -69,6 +69,8 @@ void printShortHistory();
 
 void printHistory(STOCK* stock);
 
+char* replaceWord(const char* s, const char* oldW, const char* newW);
+
 uint nextPos();
 
 void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command);

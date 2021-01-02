@@ -397,8 +397,66 @@ void other(APT_LIST* aptList, STOCK* stock, char* command) {
 }
 
 void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
+	uint place = command[1] - '0';
+	if (place < N) {
+
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[place]));
+		strcpy(short_term_history[0], short_term_history[place]);
+	}
+	else {
+
+		int i;
+		STOCK_NODE* cur = stock->head;
+		for (i = 0; i < place; i++) {
+
+			cur = cur->next;
+		}
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
+		strcpy(short_term_history[0], cur->command);
+
+	}
+	strtok(command, "^");
+	char* strToReplace = strtok(NULL, "^");
+	char* strToReplaceWith = strtok(NULL, "^");
+	//short_term_history[0] = replaceWord(short_term_history[0],strToReplace, strToReplaceWith);
+	char* replicationOfCommand = replaceWord(short_term_history[0], strToReplace, strToReplaceWith);
+	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(replicationOfCommand));
+	strcpy(short_term_history[0], replicationOfCommand);
+
+	interpretation(aptList, stock, replicationOfCommand);
+}
+
+char* replaceWord(const char* s, const char* oldW, const char* newW)
+{
+	char* result;
+	int i, cnt = 0;
+	int newWlen = strlen(newW);
+	int oldWlen = strlen(oldW);
+
+	for (i = 0; s[i] != '\0'; i++) {
+		if (strstr(&s[i], oldW) == &s[i]) {
+			cnt++;
+
+			i += oldWlen - 1;
+		}
+	}
 
 
+	result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
+
+	i = 0;
+	while (*s) {
+		if (strstr(s, oldW) == s) {
+			strcpy(&result[i], newW);
+			i += newWlen;
+			s += oldWlen;
+		}
+		else
+			result[i++] = *s++;
+	}
+
+	result[i] = '\0';
+	return result;
 }
 
 void otherCommands(APT_LIST* aptList, STOCK* stock, char* command) {
@@ -425,6 +483,7 @@ void otherCommands(APT_LIST* aptList, STOCK* stock, char* command) {
 			cur = cur->next;
 		}
 		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
+		strcpy(short_term_history[0], cur->command);
 		
 	}
 	interpretation(aptList, stock, short_term_history[0]);
