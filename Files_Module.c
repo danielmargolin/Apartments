@@ -73,6 +73,7 @@ STOCK fillStocks(FILE* f_ptr) {
 		else
 			addToTailStockList(&stock, makeStockNode(command));
 	}
+	stock.size -= nextPos();
 	return stock;
 }
 
@@ -111,7 +112,7 @@ APT_LIST fillApts(FILE* fB_ptr) {
 		date.day = (sint)day;
 		date.month = (sint)month;
 		date.year = (sint)year;
-		addToList(&lst, makeApt(address, code, price, rooms, date, database_Entry_Date));
+		addToTail(&lst, makeApt(address, code, price, rooms, date, database_Entry_Date));
 	}
 	return lst;
 }
@@ -120,7 +121,8 @@ void writeCommands(STOCK* stock) {
 
 	FILE* f_ptr = fopen(TEXT_FILE_NAME, "w");
 	STOCK_NODE* cur = stock->head;
-	fprintf(f_ptr, "%u\n", stock->size);
+	uint num = nextPos();
+	fprintf(f_ptr, "%u\n", num + stock->size);
 	unsigned int i;
 	for (i = 0; i < N; i++) {
 
@@ -129,7 +131,7 @@ void writeCommands(STOCK* stock) {
 	}
 	while (cur) {
 
-		fprintf(f_ptr, "%d%s\n", strlen(cur->command),cur->command);
+		fprintf(f_ptr, "%d%s\n", strlen(cur->command), cur->command);
 		cur = cur->next;
 	}
 	fclose(f_ptr);

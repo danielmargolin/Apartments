@@ -72,7 +72,7 @@ void deletehead(STOCK* lst) {
 	}
 }
 
-void addToList(APT_LIST* lst, APT* node) {
+void addToHead(APT_LIST* lst, APT* node) {
 
 	if ((!lst->head) && (!lst->tail)) {
 		lst->head = lst->tail = node;
@@ -82,6 +82,19 @@ void addToList(APT_LIST* lst, APT* node) {
 		node->next = lst->head;
 		lst->head->prev = node;
 		lst->head = node;
+	}
+}
+
+void addToTail(APT_LIST* lst, APT* node) {
+
+	if ((!lst->head) && (!lst->tail)) {
+		lst->head = lst->tail = node;
+	}
+	else {
+
+		node->prev = lst->tail;
+		lst->tail->next = node;
+		lst->tail = node;
 	}
 }
 
@@ -129,7 +142,7 @@ void printList(APT_LIST* lst) {
 void printApt(APT* apt) {
 
 
-	printf("Address: %s\nPrice: %d\nRooms: %d\nDate: %d/%d/%d\nEntry time: %s", apt->address, apt->price,
+	printf("Address: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d/%d/%d\nEntry time: %s", apt->address, apt->price, apt->code,
 		apt->rooms, apt->date.day, apt->date.month, apt->date.year, ctime(&apt->database_Entry_Date));
 }
 
@@ -140,8 +153,137 @@ void copyList(APT_LIST* target, APT_LIST* source) {
 	for (i = 0; (i < source->size && cur); i++) {
 
 		(target->size)++;
-		addToList(target, makeApt(cur->address, cur->code, cur->price, cur->rooms, cur->date, cur->database_Entry_Date));
+		addToTail(target, makeApt(cur->address, cur->code, cur->price, cur->rooms, cur->date, cur->database_Entry_Date));
 		cur = cur->next;
 
 	}
+}
+
+void removeInnerNode(APT* node) {
+
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+	free(node);
+}
+
+void removeHead(APT_LIST* apt) {
+
+	apt->head = apt->head->next;
+	free(apt->head->prev);
+	apt->head->prev = NULL;
+}
+
+void removeTail(APT_LIST* apt) {
+
+	apt->tail = apt->tail->prev;
+	free(apt->tail->next);
+	apt->tail->next = NULL;
+}
+
+void removeNode(APT_LIST* apt, APT* node) {
+
+	if (node->next && node->prev)
+		removeInnerNode(node);
+	else if (node->next)
+		removeHead(apt);
+	else if (node->prev)
+		removeTail(apt);
+	else {
+
+		apt->head = apt->tail = NULL;
+		free(node);
+	}
+}
+
+void reverseArrToList(APT** arr, APT_LIST* lst) {
+
+	uint i;
+	lst->head = arr[lst->size - 1];
+	lst->tail = arr[0];
+	for (i = 0; i < lst->size; i++) {
+
+		if (!i) {
+
+			arr[i]->prev = arr[i + 1];
+			arr[i]->next = NULL;
+		}
+		else if (i == (lst->size - 1)) {
+
+			arr[i]->prev = NULL;
+			arr[i]->next = arr[i - 1];
+		}
+		else {
+
+			arr[i]->prev = arr[i + 1];
+			arr[i]->next = arr[i - 1];
+		}
+	}
+
+
+}
+
+void arrToList(APT** arr, APT_LIST* lst) {
+
+
+	lst->head = arr[0];
+	lst->tail = arr[lst->size - 1];
+
+	uint i;
+
+	for (i = 0; i < lst->size; i++) {
+
+		if (!i) {
+
+			arr[i]->prev = NULL;
+			arr[i]->next = arr[i + 1];
+		}
+		else if (!arr[i + 1]) {
+
+			arr[i]->prev = arr[i - 1];
+			arr[i]->next = NULL;
+		}
+		else {
+
+			arr[i]->prev = arr[i - 1];
+			arr[i]->next = arr[i + 1];
+		}
+	}
+}
+
+APT** listToArr(APT_LIST* lst) {
+
+	APT* cur = lst->head;
+	APT** arr = (APT**)malloc(lst->size * sizeof(APT*));
+	allocationCheck(arr);
+	uint i;
+	for (i = 0; i < lst->size && cur; i++) {
+
+		arr[i] = cur;
+		cur = cur->next;
+		arr[i]->next = arr[i]->prev = NULL;
+	}
+	return arr;
+}
+
+void deleteList(APT_LIST* lst) {
+
+	if (lst->head)
+		deleteListRec(lst->head);
+}
+
+void deleteListRec(APT* node) {
+
+	if (node->next)
+		deleteListRec(node->next);
+	free(node);
+}
+
+uint nextPos() {
+
+	uint i = 0;
+	while (short_term_history[i]) {
+
+		i++;
+	}
+	return i;
 }

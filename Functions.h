@@ -17,6 +17,7 @@
 
 
 
+
 #ifndef ___FUNCTIONS_H___
 #define ___FUNCTIONS_H___
 
@@ -24,47 +25,56 @@
 
 void getCommand(APT_LIST* aptList, STOCK* stock);
 
-void interpretation(APT_LIST* aptList, char* command);
+void interpretation(APT_LIST* aptList, STOCK* stock, char* command);
 
 void findApt(APT_LIST* aptList, char* command);
 
-APT_LIST findMaxPrice(APT_LIST apt, int price);
+APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params);
 
-APT_LIST findMinPrice(APT_LIST apt, int price);
+APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params);
 
-APT_LIST findDate(APT_LIST apt, int date);
+APT_LIST findDate(APT_LIST apt, FIND_PARAMS params);
 
-APT_LIST findMaxRooms(APT_LIST apt, int numOfRooms);
+APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params);
 
-APT_LIST findMinRooms(APT_LIST apt, int numOfRooms);
+APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params);
 
-APT_LIST findLastDays(APT_LIST apt, int numOfDays);
+APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params);
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size);
-
-APT_LIST findAllApt(APT_LIST apt, int param);
+FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params);
 
 void addApt(APT_LIST* aptList, char* command);
 
-void aptOut(APT_LIST* apt, APT* node);
-
-void buy();
+void buy(APT_LIST* aptList, char* command);
 
 void deleteApt(APT_LIST* aptList, char* command);
 
-void other();
+void other(APT_LIST* aptList, STOCK* stock, char* command);
 
 void allocationCheck(void* x);
 
 DATE makeDate(char* d);
 
-void addToStock(STOCK* stock, char* command, uint add);
-
-void deleteList(APT_LIST* lst);
-
-void deleteListRec(APT* node);
+void addToStock(STOCK* stock, char* command);
 
 void binaryPrint(uchar n);
+
+int sortByPrice(const void* element1, const void* element2);
+
+int sortByRooms(const void* element1, const void* element2);
+
+void sortList(APT_LIST* apt, char* type, char* order);
+
+void printShortHistory();
+
+void printHistory(STOCK* stock);
+
+uint nextPos();
+
+void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command);
+
+void otherCommands(APT_LIST* aptList, STOCK* stock, char* command);
+
 
 #endif
 

@@ -18,25 +18,26 @@ void getCommand(APT_LIST* aptList, STOCK* stock) {
 	gets(command);
 	while (strcoll("exit", command)) {
 
-		addToStock(stock, command, stock->size);
-		interpretation(aptList, command);
+		addToStock(stock, command);
+		interpretation(aptList, stock, command);
 		gets(command);
-		stock->size++;
 	}
 	writeCommands(stock);
 	writeApts(aptList);
 }
 
-void addToStock(STOCK* stock, char* command, uint add) {
+void addToStock(STOCK* stock, char* command) {
 
-	uint i;
 
-	if (add < N) {
+	uint i, pos;
+	if (!short_term_history[N - 1]) {
 
-		if (add) {
 
-			short_term_history[add] = (char*)malloc(sizeof(char) * strlen(short_term_history[add - 1]));
-			for (i = add; i > 0; i--) {
+		pos = nextPos();
+		if (pos) {
+
+			short_term_history[pos] = (char*)malloc(sizeof(char) * strlen(short_term_history[pos - 1]));
+			for (i = pos; i > 0; i--) {
 
 				short_term_history[i] = (char*)realloc(short_term_history[i], strlen(short_term_history[i - 1]));
 				strcpy(short_term_history[i], short_term_history[i - 1]);
@@ -49,7 +50,6 @@ void addToStock(STOCK* stock, char* command, uint add) {
 		strcpy(short_term_history[0], command);
 	}
 	else {
-
 		addToHeadStockList(stock, makeStockNode(short_term_history[N - 1]));
 		for (i = N - 1; i > 0; i--) {
 
@@ -58,10 +58,12 @@ void addToStock(STOCK* stock, char* command, uint add) {
 		}
 		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(command));
 		strcpy(short_term_history[0], command);
+		stock->size++;
 	}
+
 }
 
-void interpretation(APT_LIST* aptList, char* command) {
+void interpretation(APT_LIST* aptList, STOCK* stock, char* command) {
 
 	switch (command[0]) {
 
@@ -72,13 +74,13 @@ void interpretation(APT_LIST* aptList, char* command) {
 		addApt(aptList, &command[strlen(ADD) + 1]);
 		break;
 	case 'b':
-		buy(&command[strlen(BUY) + 1]);
+		buy(aptList, &command[strlen(BUY) + 1]);
 		break;
 	case 'd':
 		deleteApt(aptList, &command[strlen(DELETE) + 1]);
 		break;
 	default:
-		other(command);
+		other(aptList, stock, command);
 		break;
 	}
 }
@@ -95,45 +97,23 @@ APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params) {
 
 			temp = cur;
 			cur = cur->next;
-			aptOut(&apt, temp);
+			removeNode(&apt, temp);
 		}
 		else {
 
 			cur = cur->next;
 			count++;
 		}
-
 	}
 	apt.size = count;
+	if (params.sortType)
+		sortList(&apt, "Price", params.sortType);
 	return apt;
 }
 
-void aptOut(APT_LIST* apt, APT* node) {
-
-	if (node->next && node->prev) {
-
-		node->prev->next = node->next;
-		node->next->prev = node->prev;
-	}
-	else if (node->next) {
-
-		apt->head = node->next;
-		apt->head->prev = NULL;
-	}
-	else if (node->prev) {
-
-		apt->tail = node->prev;
-		apt->tail->next = NULL;
-	}
-	else
-		apt->head = apt->tail = NULL;
-
-	free(node);
-}
-
 APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
-	int price = params.data;
 
+	int price = params.data;
 	APT* cur = apt.head;
 	APT* temp;
 	uint i, count = 0;
@@ -143,7 +123,7 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 
 			temp = cur;
 			cur = cur->next;
-			aptOut(&apt, temp);
+			removeNode(&apt, temp);
 		}
 		else {
 
@@ -153,6 +133,9 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 
 	}
 	apt.size = count;
+	if (params.sortType)
+		sortList(&apt, "Price", params.sortType);
+
 	return apt;
 }
 
@@ -173,7 +156,7 @@ APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
 
 			temp = cur;
 			cur = cur->next;
-			aptOut(&apt, temp);
+			removeNode(&apt, temp);
 		}
 		else {
 
@@ -183,12 +166,15 @@ APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
 	}
 
 	apt.size = count;
+	if (params.sortType)
+		sortList(&apt, "Rooms", params.sortType);
+
 	return apt;
 }
 
 APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
-	int numOfRooms = params.data;
 
+	int numOfRooms = params.data;
 	APT* cur = apt.head;
 	APT* temp;
 	uint i, count = 0;
@@ -198,7 +184,7 @@ APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
 
 			temp = cur;
 			cur = cur->next;
-			aptOut(&apt, temp);
+			removeNode(&apt, temp);
 		}
 		else {
 
@@ -207,7 +193,29 @@ APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
 		}
 	}
 	apt.size = count;
+
+	if (params.sortType && apt.size > 1)
+		sortList(&apt, "Rooms", params.sortType);
+
 	return apt;
+}
+
+void sortList(APT_LIST* apt, char* type, char* order) {
+
+	uint i;
+	APT* cur = apt->head;
+	APT** arr;
+	arr = listToArr(apt);
+
+	if (strcmp(type, "Price") == 0)
+		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
+	else if (strcmp(type, "Rooms") == 0)
+		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
+
+	if (strcmp(order, "sr") == 0)
+		reverseArrToList(arr, apt);
+	else
+		arrToList(arr, apt);
 }
 
 APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
@@ -219,7 +227,6 @@ APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
 FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params) {
 
 	FIND_FUNCTION* findFunctions = malloc(10 * sizeof(FIND_FUNCTION));
-	(*size) = 0;
 	char* currentWord = strtok(command, DELIMETERS);
 
 	while (currentWord) {
@@ -258,7 +265,7 @@ FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params) {
 
 void findApt(APT_LIST* aptList, char* command) {
 
-	int size;
+	int size = 0;
 	FIND_PARAMS params[10];
 
 	APT_LIST(**findFunctions)(APT_LIST, FIND_PARAMS);
@@ -299,13 +306,20 @@ void addApt(APT_LIST* aptList, char* command) {
 	DATE date = makeDate(d);
 	time_t now;
 	time(&now);
-	addToList(aptList, makeApt(address, aptList->size, price, rooms, date, now));
+	addToHead(aptList, makeApt(address, aptList->size, price, rooms, date, now));
 }
 
-void buy() {
+void buy(APT_LIST* aptList, char* command) {
 
+	APT* cur = aptList->head;
+	uint code = (uint)atoi(command), i;
 
+	for (i = 0; i < aptList->size && cur; i++) {
 
+		if (cur->code == code)
+			removeNode(aptList, cur);
+	}
+	aptList->size--;
 }
 
 void deleteApt(APT_LIST* aptList, char* command) {
@@ -313,12 +327,12 @@ void deleteApt(APT_LIST* aptList, char* command) {
 	uint days = atoi(command), i;
 	APT* cur = aptList->tail;
 	APT_LIST lst_To_Delete;
+	makeEmptyAptList(&lst_To_Delete);
 	lst_To_Delete.head = aptList->head;
 	time_t now;
 	time(&now);
 	int dif;
 	uint count = 0;
-	// 
 	for (i = 0; i < aptList->size && cur; i++) {
 
 		dif = (difftime(now, cur->database_Entry_Date)) / 60 / 60 / 24;
@@ -342,24 +356,78 @@ void deleteApt(APT_LIST* aptList, char* command) {
 	}
 }
 
-void deleteList(APT_LIST* lst) {
+void printShortHistory() {
 
-	if (lst->head)
-		deleteListRec(lst->head);
+	int i;
+	for (i = N - 1; i >= 0; i--) {
+
+		printf("%d -> %s\n", i + 1, short_term_history[i]);
+	}
 }
 
-void deleteListRec(APT* node) {
+void printHistory(STOCK* stock) {
 
-	if (node->next)
-		deleteListRec(node->next);
-	free(node);
+	int i;
+	STOCK_NODE* cur = stock->tail;
+	for (i = N + stock->size - 1; i >= 0; i--) {
+
+		if (cur) {
+
+			printf("%d -> %s\n", i + 1, cur->command);
+			cur = cur->prev;
+		}
+		else
+			printf("%d -> %s\n", i + 1, short_term_history[i]);
+	}
 }
 
 
+void other(APT_LIST* aptList, STOCK* stock, char* command) {
 
-void other() {
+	if (strcmp(command, "short_history") == 0)
+		printShortHistory();
+	else if (strcmp(command, "history") == 0)
+		printHistory(stock);
+	else if (strlen(command) <= 2)
+		otherCommands(aptList, stock, command);
+	else
+		changePastCommands(aptList, stock, command);
 
 
+}
+
+void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
+
+
+}
+
+void otherCommands(APT_LIST* aptList, STOCK* stock, char* command) {
+
+	if (strcmp(command, "!!") == 0) {
+
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[1]));
+		strcpy(short_term_history[0], short_term_history[1]);
+		interpretation(aptList, stock, short_term_history[0]);
+		return;
+	}
+	uint place = command[1] - '0';
+	if (place < N) {
+
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[place]));
+		strcpy(short_term_history[0], short_term_history[place]);
+	}	
+	else {
+
+		int i;
+		STOCK_NODE* cur = stock->head;
+		for (i = 0; i < place; i++) {
+
+			cur = cur->next;
+		}
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
+		
+	}
+	interpretation(aptList, stock, short_term_history[0]);
 }
 
 DATE makeDate(char* d) {
@@ -394,4 +462,22 @@ void binaryPrint(uchar n) {
 		mask >>= 1;
 	}
 	putchar('\n');
+}
+
+int sortByPrice(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const int a = (int)(*seg1)->price;
+	const int b = (int)(*seg2)->price;
+	return a - b;
+}
+
+int sortByRooms(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const int a = (int)(*seg1)->rooms;
+	const int b = (int)(*seg2)->rooms;
+	return a - b;
 }

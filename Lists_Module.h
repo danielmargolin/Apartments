@@ -32,8 +32,6 @@ void deletehead(STOCK* lst);
 
 void makeEmptyAptList(APT_LIST* lst);
 
-void addToList(APT_LIST* lst, APT* node);
-
 APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_t database_Entry_Date);
 
 void printApt(APT* apt);
@@ -41,5 +39,27 @@ void printApt(APT* apt);
 void printList(APT_LIST* lst);
 
 void copyList(APT_LIST* target, APT_LIST* source);
+
+void removeInnerNode(APT* node);
+
+void removeHead(APT_LIST* apt);
+
+void removeTail(APT_LIST* apt);
+
+void removeNode(APT_LIST* apt, APT* node);
+
+APT** listToArr(APT_LIST* lst);
+
+void arrToList(APT** arr, APT_LIST* lst);
+
+void reverseArrToList(APT** arr, APT_LIST* lst);
+
+void deleteList(APT_LIST* lst);
+
+void deleteListRec(APT* node);
+
+void addToHead(APT_LIST* lst, APT* node);
+
+void addToTail(APT_LIST* lst, APT* node);
 
 #endif
