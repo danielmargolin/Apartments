@@ -22,6 +22,7 @@ void getCommand(APT_LIST* aptList, STOCK* stock) {
 		interpretation(aptList, stock, command);
 		gets(command);
 	}
+	printList(aptList);
 	writeCommands(stock);
 	writeApts(aptList);
 }
@@ -140,13 +141,13 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 }
 
 APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
-	int date = params.data;
+
 	return apt;
 }
 
 APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
-	int numOfRooms = params.data;
 
+	int numOfRooms = params.data;
 	APT* cur = apt.head;
 	APT* temp;
 	uint i, count = 0;
@@ -219,8 +220,34 @@ void sortList(APT_LIST* apt, char* type, char* order) {
 }
 
 APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
-	int numOfDays = params.data;
 
+	int numOfDays = params.data;
+	time_t now;
+	time(&now);
+	uint count = 0, i;
+	APT* cur = apt.head;
+
+	while (cur && difftime(now, cur->database_Entry_Date) <= params.data) {
+
+		count++;
+		cur = cur->next;
+	}
+
+	if (!cur)
+		return apt;
+
+	apt.tail = cur;
+	apt.size = count;
+	if (apt.tail->next) {
+
+		APT_LIST lstToDelete;
+		lstToDelete.head = apt.tail->next;
+		lstToDelete.tail = apt.tail;
+		deleteList(&lstToDelete);
+	}
+
+	if (params.sortType && apt.size > 1)
+		sortList(&apt, "Rooms", params.sortType);
 	return apt;
 }
 
@@ -251,9 +278,21 @@ FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params) {
 			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
+		if (strcmp(currentWord, "Enter") == 0) {
+			findFunctions[(*size)] = &findLastDays;
+			params[(*size)].data = DAYS_TO_SECONDS * atoi(strtok(NULL, DELIMETERS));
+			(*size)++;
+		}
+		if (strcmp(currentWord, "Date") == 0) {
+			findFunctions[(*size)] = &findDate;
+			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
+			(*size)++;
+		}
 		currentWord = strtok(NULL, DELIMETERS);
 		if (currentWord && (strcmp(currentWord, "s") == 0 || strcmp(currentWord, "sr") == 0)) {
-			params[(*size) - 1].sortType = currentWord;
+			params[(*size) - 1].sortType = (char*)malloc(sizeof(char) * strlen(currentWord));
+			allocationCheck(params[(*size) - 1].sortType);
+			strcpy(params[(*size) - 1].sortType, currentWord);
 			currentWord = strtok(NULL, DELIMETERS);
 		}
 		else {
@@ -299,7 +338,6 @@ void addApt(APT_LIST* aptList, char* command) {
 		indexCommand++;
 	}
 	address[indexAddress] = '\0';
-
 	price = atoi(strtok(&command[indexCommand], DELIMETERS));
 	int rooms = atoi(strtok(NULL, DELIMETERS));
 	char* d = strtok(NULL, "\0");
@@ -324,19 +362,17 @@ void buy(APT_LIST* aptList, char* command) {
 
 void deleteApt(APT_LIST* aptList, char* command) {
 
-	uint days = atoi(command), i;
+	uint days = (DAYS_TO_SECONDS * atoi(command)), i;
 	APT* cur = aptList->tail;
 	APT_LIST lst_To_Delete;
 	makeEmptyAptList(&lst_To_Delete);
 	lst_To_Delete.head = aptList->head;
 	time_t now;
 	time(&now);
-	int dif;
 	uint count = 0;
 	for (i = 0; i < aptList->size && cur; i++) {
 
-		dif = (difftime(now, cur->database_Entry_Date)) / 60 / 60 / 24;
-		if (dif <= days) {
+		if (difftime(now, cur->database_Entry_Date) <= days) {
 
 			lst_To_Delete.tail = cur;
 			if (cur->next) {
@@ -388,19 +424,19 @@ void other(APT_LIST* aptList, STOCK* stock, char* command) {
 		printShortHistory();
 	else if (strcmp(command, "history") == 0)
 		printHistory(stock);
-	else if (strlen(command) <= 2)
-		otherCommands(aptList, stock, command);
+	else if (strcmp(command, "!!") == 0)
+		lastCommand(aptList, stock, command);
 	else
 		changePastCommands(aptList, stock, command);
-
-
 }
 
-void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
+void replaceLastCommand(STOCK* stock, char* command) {
+
 	uint place = command[1] - '0';
 	if (place < N) {
 
 		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[place]));
+		allocationCheck(short_term_history[0]);
 		strcpy(short_term_history[0], short_term_history[place]);
 	}
 	else {
@@ -412,18 +448,34 @@ void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
 			cur = cur->next;
 		}
 		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
+		allocationCheck(short_term_history[0]);
 		strcpy(short_term_history[0], cur->command);
-
 	}
+}
+
+void lastCommand(APT_LIST* aptList, STOCK* stock, char* command) {
+
+	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[1]));
+	strcpy(short_term_history[0], short_term_history[1]);
+	interpretation(aptList, stock, short_term_history[0]);
+}
+
+void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
+
+
+	replaceLastCommand(stock, command);
 	strtok(command, "^");
 	char* strToReplace = strtok(NULL, "^");
-	char* strToReplaceWith = strtok(NULL, "^");
-	//short_term_history[0] = replaceWord(short_term_history[0],strToReplace, strToReplaceWith);
-	char* replicationOfCommand = replaceWord(short_term_history[0], strToReplace, strToReplaceWith);
-	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(replicationOfCommand));
-	strcpy(short_term_history[0], replicationOfCommand);
+	if (strToReplace) {
 
-	interpretation(aptList, stock, replicationOfCommand);
+		char* strToReplaceWith = strtok(NULL, "^");
+		char* replicationOfCommand = replaceWord(short_term_history[0], strToReplace, strToReplaceWith);
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(replicationOfCommand));
+		strcpy(short_term_history[0], replicationOfCommand);
+		interpretation(aptList, stock, replicationOfCommand);
+	}
+	else
+		interpretation(aptList, stock, short_term_history[0]);
 }
 
 char* replaceWord(const char* s, const char* oldW, const char* newW)
@@ -433,14 +485,14 @@ char* replaceWord(const char* s, const char* oldW, const char* newW)
 	int newWlen = strlen(newW);
 	int oldWlen = strlen(oldW);
 
-	for (i = 0; s[i] != '\0'; i++) {
+	for (i = 0; i < strlen(s) && s[i]; i++) {
+
 		if (strstr(&s[i], oldW) == &s[i]) {
 			cnt++;
 
 			i += oldWlen - 1;
 		}
 	}
-
 
 	result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
 
@@ -459,42 +511,13 @@ char* replaceWord(const char* s, const char* oldW, const char* newW)
 	return result;
 }
 
-void otherCommands(APT_LIST* aptList, STOCK* stock, char* command) {
-
-	if (strcmp(command, "!!") == 0) {
-
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[1]));
-		strcpy(short_term_history[0], short_term_history[1]);
-		interpretation(aptList, stock, short_term_history[0]);
-		return;
-	}
-	uint place = command[1] - '0';
-	if (place < N) {
-
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[place]));
-		strcpy(short_term_history[0], short_term_history[place]);
-	}	
-	else {
-
-		int i;
-		STOCK_NODE* cur = stock->head;
-		for (i = 0; i < place; i++) {
-
-			cur = cur->next;
-		}
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
-		strcpy(short_term_history[0], cur->command);
-		
-	}
-	interpretation(aptList, stock, short_term_history[0]);
-}
-
 DATE makeDate(char* d) {
 
 	DATE date;
 	date.day = atoi(strtok(d, DELIMETERS));
 	date.month = atoi(strtok(NULL, DELIMETERS));
-	date.year = atoi(strtok(NULL, DELIMETERS));
+	date.year = 2000 + atoi(strtok(NULL, DELIMETERS));
+	printf("%d\n", date.year);
 	return date;
 }
 
@@ -511,7 +534,6 @@ void binaryPrint(uchar n) {
 
 	uint i;
 	uchar mask = MSB_SET(uchar);
-	mask >>= 8;
 	for (i = 0; i < sizeof(uchar) * 8; i++) {
 
 		if (mask & n)

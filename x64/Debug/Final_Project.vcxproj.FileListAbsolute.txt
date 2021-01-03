@@ -2,3 +2,5 @@ C:\Users\shake\source\repos\Final_Project2\Apartments\x64\Debug\Final_Project.ex
 C:\Users\shake\source\repos\Final_Project2\Apartments\x64\Debug\Final_Project.pdb
 C:\Users\shake\Apartments\x64\Debug\Final_Project.exe
 C:\Users\shake\Apartments\x64\Debug\Final_Project.pdb
+C:\Users\shake\source\repos\Apartments\x64\Debug\Final_Project.exe
+C:\Users\shake\source\repos\Apartments\x64\Debug\Final_Project.pdb

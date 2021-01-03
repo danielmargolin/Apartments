@@ -31,20 +31,10 @@ void main() {
 	FILE* fB_ptr = fB_ptr = fopen(APTS_FILE_NAME, "rb");
 	openAndFill(fT_ptr, fB_ptr, &stock, &aptList);
 
-
-
 	getCommand(&aptList, &stock);
-	printList(&aptList);
 
 	puts("Good Bye!");
 }
-
-
-
-
-
-
-
 
 
 

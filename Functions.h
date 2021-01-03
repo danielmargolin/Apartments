@@ -75,7 +75,9 @@ uint nextPos();
 
 void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command);
 
-void otherCommands(APT_LIST* aptList, STOCK* stock, char* command);
+void lastCommand(APT_LIST* aptList, STOCK* stock, char* command);
+
+void replaceLastCommand(STOCK* stock, char* command);
 
 
 #endif

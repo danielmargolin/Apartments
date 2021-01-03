@@ -111,7 +111,7 @@ APT_LIST fillApts(FILE* fB_ptr) {
 		year = (0 | (((mask & roomsAndDate[1]) << 4) | (roomsAndDate[2] >> 4)));
 		date.day = (sint)day;
 		date.month = (sint)month;
-		date.year = (sint)year;
+		date.year = ((sint)year) + 2000;
 		addToTail(&lst, makeApt(address, code, price, rooms, date, database_Entry_Date));
 	}
 	return lst;
@@ -147,6 +147,7 @@ void writeApts(APT_LIST* lst) {
 	uchar roomsAndDate[3];
 	for (i = 0; i < lst->size; i++) {
 
+		cur->date.year = cur->date.year - 2000;
 		roomsAndDate[0] = 0 | ((cur->rooms << 4) | (cur->date.day >> 1));
 		roomsAndDate[1] = 0 | (((cur->date.day << 7) | (cur->date.month << 3) | (cur->date.year >> 4)));
 		roomsAndDate[2] = 0 | (cur->date.year << 4);
