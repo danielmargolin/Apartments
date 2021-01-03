@@ -39,6 +39,8 @@ typedef unsigned char uchar;
 
 #define COMMAND 100
 
+#define DAYS_TO_SECONDS (24 * 60 * 60)
+
 #define FIND "find-apt"
 
 #define ADD "add-apt"
@@ -107,6 +109,7 @@ typedef struct _stock {
 } STOCK;
 
 typedef struct find_paramas {
+
 	int data;
 	char* sortType;
 } FIND_PARAMS;
