@@ -63,6 +63,8 @@ int sortByPrice(const void* element1, const void* element2);
 
 int sortByRooms(const void* element1, const void* element2);
 
+int sortByDate(const void* element1, const void* element2);
+
 void sortList(APT_LIST* apt, char* type, char* order);
 
 void printShortHistory();

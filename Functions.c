@@ -135,12 +135,41 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 	}
 	apt.size = count;
 	if (params.sortType)
-		sortList(&apt, "Price", params.sortType);
+		sortList(&apt, "Date", params.sortType);
 
 	return apt;
 }
 
 APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
+	int dateAsNumber = params.data;
+	int year = dateAsNumber % 10000;
+	dateAsNumber = dateAsNumber / 10000;
+	int month = dateAsNumber % 100;
+	dateAsNumber = dateAsNumber / 100;
+	int day = dateAsNumber % 100;
+	
+	APT* cur = apt.head;
+	APT* temp;
+	uint i, count = 0;
+	for (i = 0; i < apt.size && cur; i++) {
+
+		if (cur->date.year > year || (cur->date.year == year && cur->date.month > month) 
+			|| (cur->date.year == year && cur->date.month == month && cur->date.day > day)) {
+
+			temp = cur;
+			cur = cur->next;
+			removeNode(&apt, temp);
+		}
+		else {
+
+			cur = cur->next;
+			count++;
+		}
+	}
+
+	apt.size = count;
+	if (params.sortType)
+		sortList(&apt, "Rooms", params.sortType);
 
 	return apt;
 }
@@ -210,6 +239,8 @@ void sortList(APT_LIST* apt, char* type, char* order) {
 
 	if (strcmp(type, "Price") == 0)
 		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
+	else if (strcmp(type, "Date") == 0)
+		qsort(arr, apt->size, sizeof(APT*), &sortByDate);
 	else if (strcmp(type, "Rooms") == 0)
 		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
 
@@ -561,4 +592,24 @@ int sortByRooms(const void* element1, const void* element2) {
 	const int a = (int)(*seg1)->rooms;
 	const int b = (int)(*seg2)->rooms;
 	return a - b;
+}
+
+int sortByDate(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const DATE a = (*seg1)->date;
+	const DATE b = (*seg2)->date;
+
+	if (a.year == b.year) {
+		if (a.month == b.month) {
+			return a.day - b.day;
+		}
+		else {
+			return a.month - b.month;
+		}
+	}
+	else {
+		return a.year - b.year;
+	}
 }
