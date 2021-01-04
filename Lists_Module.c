@@ -134,16 +134,21 @@ void printList(APT_LIST* lst) {
 			puts("");
 			cur = cur->next;
 		}
-
 	}
-
+	puts("\nGood Bye!");
 }
 
 void printApt(APT* apt) {
 
-
-	printf("Address: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d/%d/%d\nEntry time: %s", apt->address, apt->price, apt->code,
-		apt->rooms, apt->date.day, apt->date.month, apt->date.year, ctime(&apt->database_Entry_Date));
+	struct tm* info;
+	char buffer[80];
+	info = localtime(&apt->database_Entry_Date);
+	strftime(buffer, 80, "%x", info);
+	uint day = atoi(strtok(buffer, "/"));
+	uint month = atoi(strtok(NULL, "/"));
+	uint year = 2000 + atoi(strtok(NULL, "/"));
+	printf("\n*************\nAddress: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d",
+		apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
 }
 
 void copyList(APT_LIST* target, APT_LIST* source) {

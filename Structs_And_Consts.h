@@ -63,7 +63,6 @@ typedef unsigned char uchar;
 
 typedef struct _date {
 
-	sint sec;
 	sint day;
 	sint month;
 	sint year;

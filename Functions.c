@@ -22,9 +22,6 @@ void getCommand(APT_LIST* aptList, STOCK* stock) {
 		interpretation(aptList, stock, command);
 		gets(command);
 	}
-	printList(aptList);
-	writeCommands(stock);
-	writeApts(aptList);
 }
 
 void addToStock(STOCK* stock, char* command) {
@@ -131,7 +128,6 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 			cur = cur->next;
 			count++;
 		}
-
 	}
 	apt.size = count;
 	if (params.sortType)
