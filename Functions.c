@@ -141,6 +141,7 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 }
 
 APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
+
 	int dateAsNumber = params.data;
 	int year = dateAsNumber % 10000;
 	dateAsNumber = dateAsNumber / 10000;
@@ -194,7 +195,6 @@ APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
 			count++;
 		}
 	}
-
 	apt.size = count;
 	if (params.sortType)
 		sortList(&apt, "Rooms", params.sortType);
@@ -385,10 +385,16 @@ void buy(APT_LIST* aptList, char* command) {
 
 	for (i = 0; i < aptList->size && cur; i++) {
 
-		if (cur->code == code)
+		if (cur->code == code) {
+
 			removeNode(aptList, cur);
+			aptList->size--;
+			return;
+		}
+		cur = cur->next;
 	}
-	aptList->size--;
+	if (!cur)
+		printf("The apartment was not found\n");
 }
 
 void deleteApt(APT_LIST* aptList, char* command) {
@@ -426,10 +432,9 @@ void deleteApt(APT_LIST* aptList, char* command) {
 void printShortHistory() {
 
 	int i;
-	for (i = N - 1; i >= 0; i--) {
-
+	for (i = N - 1; i >= 0; i--)
 		printf("%d -> %s\n", i + 1, short_term_history[i]);
-	}
+
 }
 
 void printHistory(STOCK* stock) {
@@ -469,19 +474,17 @@ void replaceLastCommand(STOCK* stock, char* command) {
 		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[place]));
 		allocationCheck(short_term_history[0]);
 		strcpy(short_term_history[0], short_term_history[place]);
+		return;
 	}
-	else {
 
-		int i;
-		STOCK_NODE* cur = stock->head;
-		for (i = 0; i < place; i++) {
-
-			cur = cur->next;
-		}
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
-		allocationCheck(short_term_history[0]);
-		strcpy(short_term_history[0], cur->command);
-	}
+	int i;
+	STOCK_NODE* cur = stock->head;
+	for (i = 0; i < place; i++) 
+		cur = cur->next;
+		
+	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
+	allocationCheck(short_term_history[0]);
+	strcpy(short_term_history[0], cur->command);
 }
 
 void lastCommand(APT_LIST* aptList, STOCK* stock, char* command) {
@@ -492,7 +495,6 @@ void lastCommand(APT_LIST* aptList, STOCK* stock, char* command) {
 }
 
 void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
-
 
 	replaceLastCommand(stock, command);
 	strtok(command, "^");
@@ -519,17 +521,17 @@ char* replaceWord(const char* s, const char* oldW, const char* newW)
 	for (i = 0; i < strlen(s) && s[i]; i++) {
 
 		if (strstr(&s[i], oldW) == &s[i]) {
-			cnt++;
 
+			cnt++;
 			i += oldWlen - 1;
 		}
 	}
-
 	result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
 
 	i = 0;
 	while (*s) {
 		if (strstr(s, oldW) == s) {
+
 			strcpy(&result[i], newW);
 			i += newWlen;
 			s += oldWlen;
@@ -537,7 +539,6 @@ char* replaceWord(const char* s, const char* oldW, const char* newW)
 		else
 			result[i++] = *s++;
 	}
-
 	result[i] = '\0';
 	return result;
 }
@@ -548,7 +549,6 @@ DATE makeDate(char* d) {
 	date.day = atoi(strtok(d, DELIMETERS));
 	date.month = atoi(strtok(NULL, DELIMETERS));
 	date.year = 2000 + atoi(strtok(NULL, DELIMETERS));
-	printf("%d\n", date.year);
 	return date;
 }
 

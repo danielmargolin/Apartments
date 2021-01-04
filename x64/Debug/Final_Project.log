@@ -1,15 +1,17 @@
 ﻿  Functions.c
 C:\Users\shake\source\repos\Apartments\Functions.c(18,6): warning C4013: 'gets' undefined; assuming extern returning int
-C:\Users\shake\source\repos\Apartments\Functions.c(206,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\Apartments\Functions.c(227,18): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\Apartments\Functions.c(312,62): warning C4047: 'function': 'FIND_PARAMS *' differs in levels of indirection from 'FIND_PARAMS (*)[10]'
-C:\Users\shake\source\repos\Apartments\Functions.c(312,55): warning C4024: 'getFindFunctions': different types for formal and actual parameter 3
-C:\Users\shake\source\repos\Apartments\Functions.c(313,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\Apartments\Functions.c(447,17): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\Apartments\Functions.c(486,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\Apartments\Functions.c(487,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\Apartments\Functions.c(551,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\Apartments\Functions.c(552,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\Apartments\Functions.c(560,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\Apartments\Functions.c(561,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\Apartments\Functions.c(235,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\Apartments\Functions.c(258,18): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\Apartments\Functions.c(342,62): warning C4047: 'function': 'FIND_PARAMS *' differs in levels of indirection from 'FIND_PARAMS (*)[10]'
+C:\Users\shake\source\repos\Apartments\Functions.c(342,55): warning C4024: 'getFindFunctions': different types for formal and actual parameter 3
+C:\Users\shake\source\repos\Apartments\Functions.c(343,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\Apartments\Functions.c(482,16): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shake\source\repos\Apartments\Functions.c(520,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Apartments\Functions.c(521,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\Apartments\Functions.c(583,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\Apartments\Functions.c(584,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\Apartments\Functions.c(592,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\Apartments\Functions.c(593,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\Apartments\Functions.c(601,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\Apartments\Functions.c(602,1): warning C4090: 'initializing': different 'const' qualifiers
   Final_Project.vcxproj -> C:\Users\shake\Source\Repos\Apartments\x64\Debug\Final_Project.exe

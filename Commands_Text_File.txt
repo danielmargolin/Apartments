@@ -1,6 +1,7 @@
-6
-23find-apt -Date 01052021
-51add-apt "Dizengoff 180 Tel Aviv" 2000000 4 28 09 20
+7
+45add-apt "Gordon 100 Holon" 1500000 3 15 06 21
+13short_history
+27find-apt -MinNumRooms 3 -sr
 44add-apt "Gordon 85 Holon" 1500000 3 15 06 21
 51add-apt "Ben Gurion 25 Herzliya" 2200000 5 01 08 20
 57add-apt "Rothschild 67 Rishon Le Zion" 1700000 3 03 10 20
