@@ -4,3 +4,5 @@ C:\Users\shake\Apartments\x64\Debug\Final_Project.exe
 C:\Users\shake\Apartments\x64\Debug\Final_Project.pdb
 C:\Users\shake\source\repos\Apartments\x64\Debug\Final_Project.exe
 C:\Users\shake\source\repos\Apartments\x64\Debug\Final_Project.pdb
+C:\Users\shake\source\repos\danielmargolin\Apartments\x64\Debug\Final_Project.exe
+C:\Users\shake\source\repos\danielmargolin\Apartments\x64\Debug\Final_Project.pdb

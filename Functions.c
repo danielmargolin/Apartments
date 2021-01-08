@@ -22,9 +22,6 @@ void getCommand(APT_LIST* aptList, STOCK* stock) {
 		interpretation(aptList, stock, command);
 		gets(command);
 	}
-	printList(aptList);
-	writeCommands(stock);
-	writeApts(aptList);
 }
 
 void addToStock(STOCK* stock, char* command) {
@@ -131,11 +128,10 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 			cur = cur->next;
 			count++;
 		}
-
 	}
 	apt.size = count;
 	if (params.sortType)
-		sortList(&apt, "Date", params.sortType);
+		sortList(&apt, "Price", params.sortType);
 
 	return apt;
 }
@@ -170,7 +166,7 @@ APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
 
 	apt.size = count;
 	if (params.sortType)
-		sortList(&apt, "Rooms", params.sortType);
+		sortList(&apt, "Date", params.sortType);
 
 	return apt;
 }
