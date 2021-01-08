@@ -209,7 +209,7 @@ void printListToFile(APT_LIST* lst) {
 		uint i;
 		for (i = 0; i < lst->size && cur; i++) {
 
-			printAptToList(f_ptr, cur);
+			printAptToFile(f_ptr, cur);
 			cur = cur->next;
 		}
 	}
@@ -217,7 +217,7 @@ void printListToFile(APT_LIST* lst) {
 	fclose(f_ptr);
 }
 
-void printAptToList(FILE* f_ptr, APT* apt) {
+void printAptToFile(FILE* f_ptr, APT* apt) {
 
 	
 	struct tm* info;
@@ -231,7 +231,6 @@ void printAptToList(FILE* f_ptr, APT* apt) {
 		apt->code, apt->address, apt->rooms, apt->price, apt->date.day, apt->date.month, apt->date.year, day, month, year);
 	//printf("\n*************\nAddress: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d",
 	//	apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
-	
 }
 
 

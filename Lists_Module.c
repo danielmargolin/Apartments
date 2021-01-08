@@ -223,8 +223,6 @@ void reverseArrToList(APT** arr, APT_LIST* lst) {
 			arr[i]->next = arr[i - 1];
 		}
 	}
-
-
 }
 
 void arrToList(APT** arr, APT_LIST* lst) {

@@ -131,7 +131,7 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 	}
 	apt.size = count;
 	if (params.sortType)
-		sortList(&apt, "Date", params.sortType);
+		sortList(&apt, "Price", params.sortType);
 
 	return apt;
 }
@@ -166,7 +166,7 @@ APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
 
 	apt.size = count;
 	if (params.sortType)
-		sortList(&apt, "Rooms", params.sortType);
+		sortList(&apt, "Date", params.sortType);
 
 	return apt;
 }
