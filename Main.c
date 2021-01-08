@@ -13,7 +13,7 @@
 
 #define ___DEBUG_APARTMENTS_LIST___
 
-#define ___PRINTING_FILE_DEBUGGING___
+//#define ___PRINTING_FILE_DEBUGGING___
 
 
 #include "Structs_And_Consts.h"
@@ -49,6 +49,8 @@ void main() {
 
 	writeCommands(&stock);
 	writeApts(&aptList);
+
+	puts("\nGood Bye!");
 }
 
 
