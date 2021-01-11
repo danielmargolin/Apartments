@@ -81,6 +81,9 @@ void lastCommand(APT_LIST* aptList, STOCK* stock, char* command);
 
 void replaceLastCommand(STOCK* stock, char* command);
 
+char* inputCommand();
+
+void printOnlyCodes(APT_LIST* lst);
 
 #endif
 

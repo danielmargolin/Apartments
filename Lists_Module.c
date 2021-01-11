@@ -135,7 +135,6 @@ void printList(APT_LIST* lst) {
 			cur = cur->next;
 		}
 	}
-	puts("\nGood Bye!");
 }
 
 void printApt(APT* apt) {
