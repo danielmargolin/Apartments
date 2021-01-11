@@ -12,6 +12,22 @@
 */
 #include "Functions.h"
 
+/*************** Static Functions Prototypes ****************/
+
+static void queuePush(uint position, char* command);
+static char* inputCommand();
+static void printHistory(STOCK* stock);
+static void printShortHistory();
+static void printOnlyCodes(APT_LIST* lst);
+static void replaceLastCommand(STOCK* stock, char* command);
+static char* replaceWord(const char* s, const char* oldW, const char* newW);
+static void interpretation(APT_LIST* aptList, STOCK* stock, char* command);
+static void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command);
+static void lastCommand(APT_LIST* aptList, STOCK* stock, char* command);
+static void replaceFirstCommand(char* command);
+
+/*************** Public Functions ****************/
+
 void getCommand(APT_LIST* aptList, STOCK* stock) {
 
 	char* command = inputCommand();
@@ -24,78 +40,26 @@ void getCommand(APT_LIST* aptList, STOCK* stock) {
 	free(command);
 }
 
-char* inputCommand() {
-
-	char* command = (char*)malloc(sizeof(char));
-	int i = 0;
-	do {
-
-		if (!command[i]);
-		command = (char*)realloc(command, i * 2 + 1);
-		command[i] = getchar();
-
-	} while (command[i++] != '\n');
-	command = (char*)realloc(command, i);
-	command[i - 1] = '\0';
-	return command;
-}
-
 void addToStock(STOCK* stock, char* command) {
 
 
 	uint i, pos;
 	if (!short_term_history[N - 1]) {
 
-
-		pos = nextPos();
-		if (pos) {
-
-			short_term_history[pos] = (char*)malloc(sizeof(char) * strlen(short_term_history[pos - 1]));
-			for (i = pos; i > 0; i--) {
-
-				short_term_history[i] = (char*)realloc(short_term_history[i], strlen(short_term_history[i - 1]));
-				strcpy(short_term_history[i], short_term_history[i - 1]);
-			}
-			short_term_history[0] = (char*)realloc(short_term_history[0], strlen(command));
-		}
+		pos = nextPos(0);
+		if (pos)
+			queuePush(pos, command);
 		else
-			short_term_history[0] = (char*)malloc(sizeof(char) * strlen(command));
+			short_term_history[0] = (char*)calloc(strlen(command), sizeof(char));
 
 		strcpy(short_term_history[0], command);
 	}
 	else {
-		addToHeadStockList(stock, makeStockNode(short_term_history[N - 1]));
-		for (i = N - 1; i > 0; i--) {
 
-			short_term_history[i] = (char*)realloc(short_term_history[i], strlen(short_term_history[i - 1]));
-			strcpy(short_term_history[i], short_term_history[i - 1]);
-		}
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(command));
+		addToHeadStockList(stock, makeStockNode(short_term_history[N - 1]));
+		queuePush(N - 1, command);
 		strcpy(short_term_history[0], command);
 		stock->size++;
-	}
-
-}
-
-void interpretation(APT_LIST* aptList, STOCK* stock, char* command) {
-
-	switch (command[0]) {
-
-	case 'f':
-		findApt(aptList, command);
-		break;
-	case 'a':
-		addApt(aptList, &command[strlen(ADD) + 1]);
-		break;
-	case 'b':
-		buy(aptList, &command[strlen(BUY) + 1]);
-		break;
-	case 'd':
-		deleteApt(aptList, &command[strlen(DELETE) + 1]);
-		break;
-	default:
-		other(aptList, stock, command);
-		break;
 	}
 }
 
@@ -367,44 +331,15 @@ void findApt(APT_LIST* aptList, char* command) {
 		printList(&filtered_List);
 }
 
-void printOnlyCodes(APT_LIST* lst) {
-
-	if (!lst->size) {
-
-		puts("EMPTY");
-		return;
-	}
-	else {
-
-		APT* cur = lst->head;
-		uint i;
-		for (i = 0; i < lst->size && cur; i++) {
-
-			printf("%d\n", cur->code);
-			cur = cur->next;
-		}
-	}
-}
-
 void addApt(APT_LIST* aptList, char* command) {
 
 	aptList->size++;
-	char address[ADDRESS];
+	char* temp = (char*)calloc(strlen(command), sizeof(char));
+	strcpy(temp, command);
+	strtok(temp, ADDRESS_DELIMETERS);
+	char* address = strtok(NULL, ADDRESS_DELIMETERS);
 	int price;
-	uint count = 0, indexCommand = 0, indexAddress = 0;
-	while (count < 2) {
-
-		if (command[indexCommand] != 34) {
-
-			address[indexAddress] = command[indexCommand];
-			indexAddress++;
-		}
-		else
-			count++;
-		indexCommand++;
-	}
-	address[indexAddress] = '\0';
-	price = atoi(strtok(&command[indexCommand], DELIMETERS));
+	price = atoi(strtok(NULL, DELIMETERS));
 	int rooms = atoi(strtok(NULL, DELIMETERS));
 	char* d = strtok(NULL, "\0");
 	DATE date = makeDate(d);
@@ -464,30 +399,6 @@ void deleteApt(APT_LIST* aptList, char* command) {
 	}
 }
 
-void printShortHistory() {
-
-	int i;
-	for (i = N - 1; i >= 0; i--)
-		printf("%d -> %s\n", i + 1, short_term_history[i]);
-
-}
-
-void printHistory(STOCK* stock) {
-
-	int i;
-	STOCK_NODE* cur = stock->tail;
-	for (i = N + stock->size - 1; i >= 0; i--) {
-
-		if (cur) {
-
-			printf("%d -> %s\n", i + 1, cur->command);
-			cur = cur->prev;
-		}
-		else
-			printf("%d -> %s\n", i + 1, short_term_history[i]);
-	}
-}
-
 void other(APT_LIST* aptList, STOCK* stock, char* command) {
 
 	if (strcmp(command, "short_history") == 0)
@@ -498,83 +409,6 @@ void other(APT_LIST* aptList, STOCK* stock, char* command) {
 		lastCommand(aptList, stock, command);
 	else
 		changePastCommands(aptList, stock, command);
-}
-
-void replaceLastCommand(STOCK* stock, char* command) {
-
-	uint place = command[1] - '0';
-	if (place < N) {
-
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[place]));
-		allocationCheck(short_term_history[0]);
-		strcpy(short_term_history[0], short_term_history[place]);
-		return;
-	}
-
-	int i;
-	STOCK_NODE* cur = stock->head;
-	for (i = 0; i < place; i++) 
-		cur = cur->next;
-		
-	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(cur->command));
-	allocationCheck(short_term_history[0]);
-	strcpy(short_term_history[0], cur->command);
-}
-
-void lastCommand(APT_LIST* aptList, STOCK* stock, char* command) {
-
-	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[1]));
-	strcpy(short_term_history[0], short_term_history[1]);
-	interpretation(aptList, stock, short_term_history[0]);
-}
-
-void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
-
-	replaceLastCommand(stock, command);
-	strtok(command, "^");
-	char* strToReplace = strtok(NULL, "^");
-	if (strToReplace) {
-
-		char* strToReplaceWith = strtok(NULL, "^");
-		char* replicationOfCommand = replaceWord(short_term_history[0], strToReplace, strToReplaceWith);
-		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(replicationOfCommand));
-		strcpy(short_term_history[0], replicationOfCommand);
-		interpretation(aptList, stock, replicationOfCommand);
-	}
-	else
-		interpretation(aptList, stock, short_term_history[0]);
-}
-
-char* replaceWord(const char* s, const char* oldW, const char* newW)
-{
-	char* result;
-	int i, cnt = 0;
-	int newWlen = strlen(newW);
-	int oldWlen = strlen(oldW);
-
-	for (i = 0; i < strlen(s) && s[i]; i++) {
-
-		if (strstr(&s[i], oldW) == &s[i]) {
-
-			cnt++;
-			i += oldWlen - 1;
-		}
-	}
-	result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
-
-	i = 0;
-	while (*s) {
-		if (strstr(s, oldW) == s) {
-
-			strcpy(&result[i], newW);
-			i += newWlen;
-			s += oldWlen;
-		}
-		else
-			result[i++] = *s++;
-	}
-	result[i] = '\0';
-	return result;
 }
 
 DATE makeDate(char* d) {
@@ -593,21 +427,6 @@ void allocationCheck(void* x) {
 		printf("ALLOCATION ERROR");
 		exit(1);
 	}
-}
-
-void binaryPrint(uchar n) {
-
-	uint i;
-	uchar mask = MSB_SET(uchar);
-	for (i = 0; i < sizeof(uchar) * 8; i++) {
-
-		if (mask & n)
-			putchar('1');
-		else
-			putchar('0');
-		mask >>= 1;
-	}
-	putchar('\n');
 }
 
 int sortByPrice(const void* element1, const void* element2) {
@@ -647,3 +466,180 @@ int sortByDate(const void* element1, const void* element2) {
 		return a.year - b.year;
 	}
 }
+
+/*************** Static Functions ****************/
+
+static void interpretation(APT_LIST* aptList, STOCK* stock, char* command) {
+
+	switch (command[0]) {
+
+	case 'f':
+		findApt(aptList, command);
+		break;
+	case 'a':
+		addApt(aptList, command);
+		break;
+	case 'b':
+		buy(aptList, &command[strlen(BUY) + 1]);
+		break;
+	case 'd':
+		deleteApt(aptList, &command[strlen(DELETE) + 1]);
+		break;
+	default:
+		other(aptList, stock, command);
+		break;
+	}
+}
+
+static char* inputCommand() {
+
+	char* command = (char*)malloc(sizeof(char));
+	int i = 0;
+	do {
+
+		if (!command[i]);
+		command = (char*)realloc(command, i * 2 + 1);
+		command[i] = getchar();
+
+	} while (command[i++] != '\n');
+	command = (char*)realloc(command, i);
+	command[i - 1] = '\0';
+	return command;
+}
+
+static void queuePush(uint position, char* command) {
+
+	uint i;
+	short_term_history[position] = (char*)malloc(0);
+	for (i = position; i > 0; i--) {
+
+		short_term_history[i] = (char*)realloc(short_term_history[i], strlen(short_term_history[i - 1]));
+		short_term_history[i][strlen(short_term_history[i - 1])] = '\0';
+		strcpy(short_term_history[i], short_term_history[i - 1]);
+	}
+	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(command));
+	short_term_history[0][strlen(command)] = '\0';
+}
+
+static void printShortHistory() {
+
+	int i;
+	for (i = N - 1; i >= 0; i--)
+		printf("%d -> %s\n", i, short_term_history[i]);
+
+}
+
+static void printHistory(STOCK* stock) {
+
+	int i;
+	STOCK_NODE* cur = stock->tail;
+	for (i = N + stock->size - 1; i >= 0; i--) {
+
+		if (cur) {
+
+			printf("%d -> %s\n", i, cur->command);
+			cur = cur->prev;
+		}
+		else
+			printf("%d -> %s\n", i, short_term_history[i]);
+	}
+}
+
+static void printOnlyCodes(APT_LIST* lst) {
+
+	if (!lst->size) {
+
+		puts("EMPTY");
+		return;
+	}
+	else {
+
+		APT* cur = lst->head;
+		uint i;
+		for (i = 0; i < lst->size && cur; i++) {
+
+			printf("%d\n", cur->code);
+			cur = cur->next;
+		}
+	}
+}
+
+static void replaceLastCommand(STOCK* stock, char* command) {
+
+	int place = atoi(command + 1);
+	if (place < N - 1) {
+		replaceFirstCommand(short_term_history[place + 1]);
+		return;
+	}
+
+	int i;
+	STOCK_NODE* cur = stock->head;
+	for (i = 0; (i < place - N) && cur; i++)
+		cur = cur->next;
+	replaceFirstCommand(cur->command);
+}
+
+static char* replaceWord(const char* s, const char* oldW, const char* newW) {
+
+	char* result;
+	int i, cnt = 0;
+	int newWlen = strlen(newW);
+	int oldWlen = strlen(oldW);
+
+	for (i = 0; i < strlen(s) && s[i]; i++) {
+
+		if (strstr(&s[i], oldW) == &s[i]) {
+
+			cnt++;
+			i += oldWlen - 1;
+		}
+	}
+	result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
+
+	i = 0;
+	while (*s) {
+		if (strstr(s, oldW) == s) {
+
+			strcpy(&result[i], newW);
+			i += newWlen;
+			s += oldWlen;
+		}
+		else
+			result[i++] = *s++;
+	}
+	result[i] = '\0';
+	return result;
+}
+
+static void replaceFirstCommand(char* command) {
+
+	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(command));
+	allocationCheck(short_term_history[0]);
+	short_term_history[0][strlen(command)] = '\0';
+	strcpy(short_term_history[0], command);
+}
+
+static void lastCommand(APT_LIST* aptList, STOCK* stock, char* command) {
+
+	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[1]));
+	strcpy(short_term_history[0], short_term_history[1]);
+	interpretation(aptList, stock, short_term_history[0]);
+}
+
+static void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
+
+	replaceLastCommand(stock, command);
+	strtok(command, "^");
+	char* strToReplace = strtok(NULL, "^");
+	if (strToReplace) {
+
+		char* strToReplaceWith = strtok(NULL, "^");
+		char* replicationOfCommand = replaceWord(short_term_history[0], strToReplace, strToReplaceWith);
+		short_term_history[0] = (char*)realloc(short_term_history[0], strlen(replicationOfCommand));
+		strcpy(short_term_history[0], replicationOfCommand);
+		interpretation(aptList, stock, short_term_history[0]);
+	}
+	else
+		interpretation(aptList, stock, short_term_history[0]);
+}
+

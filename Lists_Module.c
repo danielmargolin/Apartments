@@ -143,8 +143,8 @@ void printApt(APT* apt) {
 	char buffer[80];
 	info = localtime(&apt->database_Entry_Date);
 	strftime(buffer, 80, "%x", info);
-	uint day = atoi(strtok(buffer, "/"));
-	uint month = atoi(strtok(NULL, "/"));
+	uint month = atoi(strtok(buffer, "/"));
+	uint day = atoi(strtok(NULL, "/"));
 	uint year = 2000 + atoi(strtok(NULL, "/"));
 	printf("\n*************\nAddress: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d",
 		apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
@@ -280,12 +280,9 @@ void deleteListRec(APT* node) {
 	free(node);
 }
 
-uint nextPos() {
+uint nextPos(uint i) {
 
-	uint i = 0;
-	while (short_term_history[i]) {
-
-		i++;
-	}
+	if (short_term_history[i])
+		return nextPos(++i);
 	return i;
 }

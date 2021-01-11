@@ -1,16 +1,8 @@
-﻿  Functions.c
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(280,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(320,18): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(404,62): warning C4047: 'function': 'FIND_PARAMS *' differs in levels of indirection from 'FIND_PARAMS (*)[10]'
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(404,55): warning C4024: 'getFindFunctions': different types for formal and actual parameter 3
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(405,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(565,16): warning C4018: '<': signed/unsigned mismatch
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(601,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(602,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(664,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(665,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(673,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(674,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(682,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(683,1): warning C4090: 'initializing': different 'const' qualifiers
+﻿  Files_Module.c
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(104,46): warning C4101: 'mask': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(155,19): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(155,19): message : consider using '%zd' in the format string
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(163,18): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(163,18): message : consider using '%zd' in the format string
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(183,36): warning C4267: '=': conversion from 'size_t' to 'sint', possible loss of data
   Final_Project.vcxproj -> C:\Users\shake\source\repos\danielmargolin\Apartments\x64\Debug\Final_Project.exe

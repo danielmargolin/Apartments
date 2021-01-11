@@ -25,8 +25,6 @@
 
 void getCommand(APT_LIST* aptList, STOCK* stock);
 
-void interpretation(APT_LIST* aptList, STOCK* stock, char* command);
-
 void findApt(APT_LIST* aptList, char* command);
 
 APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params);
@@ -57,8 +55,6 @@ DATE makeDate(char* d);
 
 void addToStock(STOCK* stock, char* command);
 
-void binaryPrint(uchar n);
-
 int sortByPrice(const void* element1, const void* element2);
 
 int sortByRooms(const void* element1, const void* element2);
@@ -66,24 +62,6 @@ int sortByRooms(const void* element1, const void* element2);
 int sortByDate(const void* element1, const void* element2);
 
 void sortList(APT_LIST* apt, char* type, char* order);
-
-void printShortHistory();
-
-void printHistory(STOCK* stock);
-
-char* replaceWord(const char* s, const char* oldW, const char* newW);
-
-uint nextPos();
-
-void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command);
-
-void lastCommand(APT_LIST* aptList, STOCK* stock, char* command);
-
-void replaceLastCommand(STOCK* stock, char* command);
-
-char* inputCommand();
-
-void printOnlyCodes(APT_LIST* lst);
 
 #endif
 
