@@ -50,7 +50,7 @@ void main() {
 	writeCommands(&stock);
 	writeApts(&aptList);
 
-	puts("\nGood Bye!");
+	puts("Good Bye!");
 }
 
 

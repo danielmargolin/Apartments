@@ -46,9 +46,5 @@ void printListToFile(APT_LIST* lst);
 
 void printAptToFile(FILE* f_ptr, APT* apt);
 
-void writeDataBaseA(FILE* f_ptr);
-
-void writeDataBaseB(FILE* f_ptr, STOCK_NODE* cur);
-
 #endif
 

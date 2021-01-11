@@ -1,51 +1,30 @@
 Apt details:
-Code: 7
-Address: Gordon 85 Holon
-Rooms: 3
-Price: 1500000
-Entry date: 15.6.2021
-Database entry date: 1.11.2021
-Apt details:
-Code: 6
-Address: Ben Gurion 25 Herzliya
-Rooms: 5
-Price: 2200000
-Entry date: 1.8.2020
-Database entry date: 1.11.2021
-Apt details:
-Code: 5
-Address: Rothschild 67 Rishon Le Zion
-Rooms: 3
-Price: 1700000
-Entry date: 3.10.2020
-Database entry date: 1.11.2021
-Apt details:
 Code: 4
 Address: Gordon 85 Holon
-Rooms: 3
+Rooms: 7
 Price: 1500000
-Entry date: 15.6.2021
-Database entry date: 1.11.2021
+Entry date: 18.0.2000
+Database entry date: 11.1.2021
 Apt details:
 Code: 3
 Address: Ben Gurion 25 Herzliya
-Rooms: 5
+Rooms: 7
 Price: 2200000
-Entry date: 1.8.2020
-Database entry date: 1.11.2021
+Entry date: 18.0.2000
+Database entry date: 11.1.2021
 Apt details:
 Code: 2
 Address: Rothschild 67 Rishon Le Zion
-Rooms: 3
+Rooms: 7
 Price: 1700000
-Entry date: 3.10.2020
-Database entry date: 1.11.2021
+Entry date: 18.0.2000
+Database entry date: 11.1.2021
 Apt details:
 Code: 1
 Address: Dizengoff 180 Tel Aviv
-Rooms: 4
+Rooms: 7
 Price: 2000000
-Entry date: 29.9.2020
-Database entry date: 1.11.2021
+Entry date: 18.0.2000
+Database entry date: 11.1.2021
 
 Good Bye!
