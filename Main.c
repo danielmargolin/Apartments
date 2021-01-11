@@ -31,8 +31,8 @@ void main() {
 	makeEmptyStockList(&stock);
 	APT_LIST aptList;
 	makeEmptyAptList(&aptList);
-	FILE* fT_ptr = fT_ptr = fopen(TEXT_FILE_NAME, "r");
-	FILE* fB_ptr = fB_ptr = fopen(APTS_FILE_NAME, "rb");
+	FILE* fT_ptr = NULL;
+	FILE* fB_ptr = NULL;
 	openAndFill(fT_ptr, fB_ptr, &stock, &aptList);
 
 	getCommand(&aptList, &stock);
@@ -50,7 +50,7 @@ void main() {
 	writeCommands(&stock);
 	writeApts(&aptList);
 
-	puts("\nGood Bye!");
+	puts("Good Bye!");
 }
 
 

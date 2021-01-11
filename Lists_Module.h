@@ -62,4 +62,6 @@ void addToHead(APT_LIST* lst, APT* node);
 
 void addToTail(APT_LIST* lst, APT* node);
 
+uint nextPos(uint i);
+
 #endif

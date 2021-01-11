@@ -51,6 +51,8 @@ typedef unsigned char uchar;
 
 #define DELIMETERS " -\n\t"
 
+#define ADDRESS_DELIMETERS "\""
+
 #define TEXT_FILE_NAME "Commands_Text_File.txt"
 
 #define APTS_FILE_NAME "Apartments_Binary_File.bin"
