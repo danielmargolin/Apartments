@@ -215,38 +215,6 @@ APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
 	return apt;
 }
 
-//APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
-//
-//	sortList(&apt, "Rooms", params.sortType);
-//	int numOfRooms = params.data;
-//	uint count = 0;
-//	if (apt.tail->rooms <= numOfRooms)
-//		return apt;
-//
-//	APT_LIST aptToDelete;
-//	aptToDelete.head = apt.head;
-//	if (apt.head->rooms > numOfRooms) {
-//
-//		aptToDelete.tail = apt.tail;
-//		deleteList(&aptToDelete);
-//		makeEmptyAptList(&apt);
-//		return apt;
-//	}
-//	
-//	APT* cur = apt.head;
-//	while (cur && cur->rooms <= numOfRooms) {
-//
-//		cur = cur->next;
-//		count++;
-//	}
-//
-//	aptToDelete.head = cur;
-//	aptToDelete.tail = apt.tail;
-//	deleteList(&aptToDelete);
-//	apt.size = count;
-//	return apt;
-//}
-
 APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
 
 	int numOfRooms = params.data;
@@ -294,23 +262,6 @@ void sortList(APT_LIST* apt, char* type, char* order) {
 	else
 		arrToList(arr, apt);
 }
-
-//void sortList(APT_LIST* apt, char* type, char* order) {
-//
-//	uint i;
-//	APT* cur = apt->head;
-//	APT** arr;
-//	arr = listToArr(apt);
-//
-//	if (strcmp(type, "Price") == 0)
-//		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
-//	else if (strcmp(type, "Date") == 0)
-//		qsort(arr, apt->size, sizeof(APT*), &sortByDate);
-//	else if (strcmp(type, "Rooms") == 0)
-//		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
-//
-//	arrToList(arr, apt);
-//}
 
 APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
 
