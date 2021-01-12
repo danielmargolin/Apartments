@@ -1,4 +1,18 @@
-4
+18
+59find-apt -MinNumRooms 3 -MaxNumRooms 5 -MaxPrice 1750000 -s
+44add-apt "Gordon 85 Holon" 1500000 3 15 06 21
+51add-apt "Ben Gurion 25 Herzliya" 2200000 5 01 08 20
+57add-apt "Rothschild 67 Rishon Le Zion" 1700000 3 03 10 20
+51add-apt "Dizengoff 180 Tel Aviv" 2000000 4 28 09 20
+44add-apt "Gordon 85 Holon" 1500000 3 15 06 21
+51add-apt "Ben Gurion 25 Herzliya" 2200000 5 01 08 20
+57add-apt "Rothschild 67 Rishon Le Zion" 1700000 3 03 10 20
+51add-apt "Dizengoff 180 Tel Aviv" 2000000 4 28 09 20
+21find-apt -MinNumRooms
+7history
+59find-apt -MinNumRooms 3 -MaxNumRooms 5 -MaxPrice 1750000 -s
+27find-apt -MinNumRooms 4 -sr
+59find-apt -MinNumRooms 3 -MaxNumRooms 5 -MaxPrice 1750000 -s
 44add-apt "Gordon 85 Holon" 1500000 3 15 06 21
 51add-apt "Ben Gurion 25 Herzliya" 2200000 5 01 08 20
 57add-apt "Rothschild 67 Rishon Le Zion" 1700000 3 03 10 20

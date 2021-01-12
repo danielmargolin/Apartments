@@ -25,6 +25,10 @@ static void interpretation(APT_LIST* aptList, STOCK* stock, char* command);
 static void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command);
 static void lastCommand(APT_LIST* aptList, STOCK* stock, char* command);
 static void replaceFirstCommand(char* command);
+static int sortByPrice(const void* element1, const void* element2);
+static int sortByRooms(const void* element1, const void* element2);
+static int sortByDate(const void* element1, const void* element2);
+static void reallocationFindFuncs(FIND_FUNCTION** findFunctions, int* params, int size);
 
 /*************** Public Functions ****************/
 
@@ -63,9 +67,9 @@ void addToStock(STOCK* stock, char* command) {
 	}
 }
 
-APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params) {
+APT_LIST findMaxPrice(APT_LIST apt, int param) {
 
-	int price = params.data;
+	int price = param;
 
 	APT* cur = apt.head;
 	APT* temp;
@@ -85,14 +89,12 @@ APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params) {
 		}
 	}
 	apt.size = count;
-	if (params.sortType)
-		sortList(&apt, "Price", params.sortType);
 	return apt;
 }
 
-APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
+APT_LIST findMinPrice(APT_LIST apt, int param) {
 
-	int price = params.data;
+	int price = param;
 	APT* cur = apt.head;
 	APT* temp;
 	uint i, count = 0;
@@ -111,15 +113,12 @@ APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params) {
 		}
 	}
 	apt.size = count;
-	if (params.sortType)
-		sortList(&apt, "Price", params.sortType);
-
 	return apt;
 }
 
-APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
+APT_LIST findDate(APT_LIST apt, int param) {
 
-	int dateAsNumber = params.data;
+	int dateAsNumber = param;
 	int year = dateAsNumber % 10000;
 	dateAsNumber = dateAsNumber / 10000;
 	int month = dateAsNumber % 100;
@@ -146,15 +145,12 @@ APT_LIST findDate(APT_LIST apt, FIND_PARAMS params) {
 	}
 
 	apt.size = count;
-	if (params.sortType)
-		sortList(&apt, "Date", params.sortType);
-
 	return apt;
 }
 
-APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
+APT_LIST findMaxRooms(APT_LIST apt, int param) {
 
-	int numOfRooms = params.data;
+	int numOfRooms = param;
 	APT* cur = apt.head;
 	APT* temp;
 	uint i, count = 0;
@@ -173,15 +169,12 @@ APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params) {
 		}
 	}
 	apt.size = count;
-	if (params.sortType)
-		sortList(&apt, "Rooms", params.sortType);
-
 	return apt;
 }
 
-APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
+APT_LIST findMinRooms(APT_LIST apt, int param) {
 
-	int numOfRooms = params.data;
+	int numOfRooms = param;
 	APT* cur = apt.head;
 	APT* temp;
 	uint i, count = 0;
@@ -201,13 +194,10 @@ APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params) {
 	}
 	apt.size = count;
 
-	if (params.sortType && apt.size > 1)
-		sortList(&apt, "Rooms", params.sortType);
-
 	return apt;
 }
 
-void sortList(APT_LIST* apt, char* type, char* order) {
+void sortList(APT_LIST* apt, char* type, char order) {
 
 	uint i;
 	APT* cur = apt->head;
@@ -221,21 +211,23 @@ void sortList(APT_LIST* apt, char* type, char* order) {
 	else if (strcmp(type, "Rooms") == 0)
 		qsort(arr, apt->size, sizeof(APT*), &sortByRooms);
 
-	if (strcmp(order, "sr") == 0)
+	if (order == 'r')
 		reverseArrToList(arr, apt);
 	else
 		arrToList(arr, apt);
 }
 
-APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
+APT_LIST findLastDays(APT_LIST apt, int param) {
 
-	int numOfDays = params.data;
+	if (!param)
+		return apt;
+	int numOfDays = param;
 	time_t now;
 	time(&now);
 	uint count = 0, i;
 	APT* cur = apt.head;
 
-	while (cur && difftime(now, cur->database_Entry_Date) <= params.data) {
+	while (cur && difftime(now, cur->database_Entry_Date) <= param) {
 
 		count++;
 		cur = cur->next;
@@ -253,78 +245,91 @@ APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params) {
 		lstToDelete.tail = apt.tail;
 		deleteList(&lstToDelete);
 	}
-
-	//if (params.sortType && apt.size > 1)
-	//	sortList(&apt, "Rooms", params.sortType);
 	return apt;
 }
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params) {
+FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params, char *sort) {
 
-	FIND_FUNCTION* findFunctions = malloc(10 * sizeof(FIND_FUNCTION));
+	FIND_FUNCTION* findFunctions = (FIND_FUNCTION*)malloc(10 * sizeof(FIND_FUNCTION));
 	char* currentWord = strtok(command, DELIMETERS);
 
 	while (currentWord) {
-
+			
 		if (strcmp(currentWord, "MaxPrice") == 0) {
 			findFunctions[(*size)] = &findMaxPrice;
-			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
-		if (strcmp(currentWord, "MinPrice") == 0) {
+		else if (strcmp(currentWord, "MinPrice") == 0) {
 			findFunctions[(*size)] = &findMinPrice;
-			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
-		if (strcmp(currentWord, "MinNumRooms") == 0) {
+		else if (strcmp(currentWord, "MinNumRooms") == 0) {
 			findFunctions[(*size)] = &findMinRooms;
-			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
-		if (strcmp(currentWord, "MaxNumRooms") == 0) {
+		else if (strcmp(currentWord, "MaxNumRooms") == 0) {
 			findFunctions[(*size)] = &findMaxRooms;
-			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
-		if (strcmp(currentWord, "Enter") == 0) {
+		else if (strcmp(currentWord, "Enter") == 0) {
 			findFunctions[(*size)] = &findLastDays;
-			params[(*size)].data = DAYS_TO_SECONDS * atoi(strtok(NULL, DELIMETERS));
+			char* temp = strtok(NULL, DELIMETERS);
+			if (temp)
+				params[(*size)] = DAYS_TO_SECONDS * atoi(temp);
+			else
+				params[(*size)] = NULL;
 			(*size)++;
 		}
-		if (strcmp(currentWord, "Date") == 0) {
+		else if (strcmp(currentWord, "Date") == 0) {
 			findFunctions[(*size)] = &findDate;
-			params[(*size)].data = atoi(strtok(NULL, DELIMETERS));
+			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
 			(*size)++;
 		}
+		else if (strcmp(currentWord, "sr") == 0)
+			(*sort) = 'r';
+	
+		else if (strcmp(currentWord, "s") == 0)
+			(*sort) = 's';
+
 		currentWord = strtok(NULL, DELIMETERS);
-		if (currentWord && (strcmp(currentWord, "s") == 0 || strcmp(currentWord, "sr") == 0)) {
-			params[(*size) - 1].sortType = (char*)malloc(sizeof(char) * strlen(currentWord));
-			allocationCheck(params[(*size) - 1].sortType);
-			strcpy(params[(*size) - 1].sortType, currentWord);
-			currentWord = strtok(NULL, DELIMETERS);
-		}
-		else {
-			params[(*size) - 1].sortType = NULL;
-		}
 	}
 	return findFunctions;
+}
+
+static void reallocationFindFuncs(FIND_FUNCTION** findFunctions, int* params, int size) {
+
+	puts("start");
+	findFunctions = (FIND_FUNCTION**)realloc(findFunctions, size * 2 + 1);
+	allocationCheck(findFunctions);
+	params = (int*)realloc(params, size * 2 + 1);
+	allocationCheck(params);
+	puts("end");
+
 }
 
 void findApt(APT_LIST* aptList, char* command) {
 
 	int size = 0;
-	FIND_PARAMS params[10];
-
-	APT_LIST(**findFunctions)(APT_LIST, FIND_PARAMS);
-	findFunctions = getFindFunctions(command + 8, &size, &params);
+	int params[10];
+	char sort = '\0';
+	APT_LIST(**findFunctions)(APT_LIST, int*);
+	findFunctions = getFindFunctions(command + 8, &size, params, &sort);
 	uint i;
 	APT_LIST filtered_List;
 	makeEmptyAptList(&filtered_List);
 	copyList(&filtered_List, aptList);
-	for (int i = size - 1; i >= 0; i--) {
+	for (int i = 0; i < size; i++) {
 
-		filtered_List = (*findFunctions[i])(filtered_List, params[i]);
+		if (findFunctions[i])
+			filtered_List = (*findFunctions[i])(filtered_List, params[i]);
 	}
+	if (sort)
+		sortList(&filtered_List, "Price", sort);
+
 	if (size == 1 && (*findFunctions[0]) == &findLastDays)
 		printOnlyCodes(&filtered_List);
 	else
@@ -426,44 +431,6 @@ void allocationCheck(void* x) {
 
 		printf("ALLOCATION ERROR");
 		exit(1);
-	}
-}
-
-int sortByPrice(const void* element1, const void* element2) {
-
-	APT** seg1 = element1;
-	APT** seg2 = element2;
-	const int a = (int)(*seg1)->price;
-	const int b = (int)(*seg2)->price;
-	return a - b;
-}
-
-int sortByRooms(const void* element1, const void* element2) {
-
-	APT** seg1 = element1;
-	APT** seg2 = element2;
-	const int a = (int)(*seg1)->rooms;
-	const int b = (int)(*seg2)->rooms;
-	return a - b;
-}
-
-int sortByDate(const void* element1, const void* element2) {
-
-	APT** seg1 = element1;
-	APT** seg2 = element2;
-	const DATE a = (*seg1)->date;
-	const DATE b = (*seg2)->date;
-
-	if (a.year == b.year) {
-		if (a.month == b.month) {
-			return a.day - b.day;
-		}
-		else {
-			return a.month - b.month;
-		}
-	}
-	else {
-		return a.year - b.year;
 	}
 }
 
@@ -643,3 +610,40 @@ static void changePastCommands(APT_LIST* aptList, STOCK* stock, char* command) {
 		interpretation(aptList, stock, short_term_history[0]);
 }
 
+static int sortByPrice(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const int a = (int)(*seg1)->price;
+	const int b = (int)(*seg2)->price;
+	return a - b;
+}
+
+static int sortByRooms(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const int a = (int)(*seg1)->rooms;
+	const int b = (int)(*seg2)->rooms;
+	return a - b;
+}
+
+static int sortByDate(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const DATE a = (*seg1)->date;
+	const DATE b = (*seg2)->date;
+
+	if (a.year == b.year) {
+		if (a.month == b.month) {
+			return a.day - b.day;
+		}
+		else {
+			return a.month - b.month;
+		}
+	}
+	else {
+		return a.year - b.year;
+	}
+}
