@@ -27,19 +27,19 @@ void getCommand(APT_LIST* aptList, STOCK* stock);
 
 void findApt(APT_LIST* aptList, char* command);
 
-APT_LIST findMaxPrice(APT_LIST apt, FIND_PARAMS params);
+APT_LIST findMaxPrice(APT_LIST apt, int param);
 
-APT_LIST findMinPrice(APT_LIST apt, FIND_PARAMS params);
+APT_LIST findMinPrice(APT_LIST apt, int param);
 
-APT_LIST findDate(APT_LIST apt, FIND_PARAMS params);
+APT_LIST findDate(APT_LIST apt, int param);
 
-APT_LIST findMaxRooms(APT_LIST apt, FIND_PARAMS params);
+APT_LIST findMaxRooms(APT_LIST apt, int param);
 
-APT_LIST findMinRooms(APT_LIST apt, FIND_PARAMS params);
+APT_LIST findMinRooms(APT_LIST apt, int param);
 
-APT_LIST findLastDays(APT_LIST apt, FIND_PARAMS params);
+APT_LIST findLastDays(APT_LIST apt, int param);
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size, FIND_PARAMS* params);
+FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params, char *sort);
 
 void addApt(APT_LIST* aptList, char* command);
 
@@ -55,13 +55,7 @@ DATE makeDate(char* d);
 
 void addToStock(STOCK* stock, char* command);
 
-int sortByPrice(const void* element1, const void* element2);
-
-int sortByRooms(const void* element1, const void* element2);
-
-int sortByDate(const void* element1, const void* element2);
-
-void sortList(APT_LIST* apt, char* type, char* order);
+void sortList(APT_LIST* apt, char* type, char order);
 
 #endif
 

@@ -102,10 +102,8 @@ APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_
 
 	APT* apt = (APT*)malloc(sizeof(APT));
 	allocationCheck(apt);
-
 	apt->prev = apt->next = NULL;
-
-	apt->address = (char*)malloc(strlen(ad) * sizeof(char));
+	apt->address = (char*)calloc(strlen(ad), sizeof(char));
 	allocationCheck(apt->address);
 	strcpy(apt->address, ad);
 	apt->code = code;
@@ -113,7 +111,6 @@ APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_
 	apt->date = date;
 	apt->rooms = rooms;
 	apt->database_Entry_Date = database_Entry_Date;
-
 	return apt;
 }
 

@@ -18,11 +18,9 @@ static APT* readApt(FILE* fB_ptr);
 
 static void writeApt(FILE* f_ptr, APT* cur);
 
-static void castingBitsToText(uchar roomsAndDate[3], unsigned short int* rooms, unsigned short int* day, unsigned short int* month,
-	unsigned short int* year);
+static DATE castingBitsToText(uchar roomsAndDate[3], unsigned short int* rooms);
 
-static uchar* castingTextToBits(unsigned short int rooms, unsigned short int day, unsigned short int month,
-	unsigned short int year);
+static void castingTextToBits(uchar roomsAndDate[3], APT* cur);
 
 static void writeDataBaseA(FILE* f_ptr);
 
@@ -94,21 +92,6 @@ STOCK fillStocks(FILE* f_ptr) {
 	return stock;
 }
 
-APT_LIST fillApts(FILE* fB_ptr) {
-
-	APT_LIST lst;
-	APT* apt;
-	makeEmptyAptList(&lst);
-	fread(&lst.size, 1, sizeof(lst.size), fB_ptr);
-	uint i;
-	for (i = 0; i < lst.size && !feof(fB_ptr); i++) {
-
-		apt = readApt(fB_ptr);
-		addToTail(&lst, apt);
-	}
-	return lst;
-}
-
 void writeCommands(STOCK* stock) {
 
 	FILE* f_ptr = fopen(TEXT_FILE_NAME, "w");
@@ -118,20 +101,6 @@ void writeCommands(STOCK* stock) {
 	writeDataBaseA(f_ptr);
 	writeDataBaseB(f_ptr,stock->head);
 
-	fclose(f_ptr);
-}
-
-void writeApts(APT_LIST* lst) {
-
-	FILE* f_ptr = fopen(APTS_FILE_NAME, "wb");
-	APT* cur = lst->head;
-	fwrite(&lst->size, 1, sizeof(lst->size), f_ptr);
-	uint i;
-	for (i = 0; i < lst->size && cur; i++) {
-
-		writeApt(f_ptr, cur);
-		cur = cur->next;
-	}
 	fclose(f_ptr);
 }
 
@@ -173,7 +142,38 @@ void printAptToFile(FILE* f_ptr, APT* apt) {
 	//	apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
 }
 
+APT_LIST fillApts(FILE* fB_ptr) {
 
+	APT_LIST lst;
+	makeEmptyAptList(&lst);
+	APT* apt;
+
+	fread(&lst.size, 1, sizeof(lst.size), fB_ptr);
+	uint i;
+	for (i = 0; i < lst.size && !feof(fB_ptr); i++) {
+
+		apt = readApt(fB_ptr);
+		addToTail(&lst, apt);
+	}
+	return lst;
+}
+
+void writeApts(APT_LIST* lst) {
+
+	FILE* f_ptr = fopen(APTS_FILE_NAME, "wb");
+	APT* cur = lst->head;
+	fwrite(&lst->size, 1, sizeof(lst->size), f_ptr);
+	uint i;
+
+	for (i = 0; i < lst->size; i++) {
+
+		writeApt(f_ptr, cur);
+		cur = cur->next;
+	}
+	fclose(f_ptr);
+}
+
+  
 /*************** Static Functions ****************/
 
 static APT* readApt(FILE* fB_ptr) {
@@ -181,50 +181,51 @@ static APT* readApt(FILE* fB_ptr) {
 	APT* apt;
 	uint code;
 	sint addressLen;
-	char* address = NULL;
+	char* address;
 	uchar roomsAndDate[3];
 	int price;
-	unsigned short int rooms, day, month, year, mask;
-	rooms = day = month = year = 0;
+	unsigned short int rooms;
 	time_t database_Entry_Date;
 	DATE date;
+	unsigned short int mask;
 	fread(&code, 1, sizeof(code), fB_ptr);
 	fread(&addressLen, 1, sizeof(addressLen), fB_ptr);
-	address = (char*)calloc(addressLen + 1, sizeof(char));
+	address = (char*)calloc(addressLen, sizeof(char));
 	fread(address, addressLen, sizeof(char), fB_ptr);
 	address[addressLen] = '\0';
 	fread(&price, 1, sizeof(price), fB_ptr);
 	fread(&database_Entry_Date, 1, sizeof(database_Entry_Date), fB_ptr);
 	fread(roomsAndDate, 1, sizeof(roomsAndDate), fB_ptr);
-	castingBitsToText(roomsAndDate, &rooms, &day, &month, &year);
-	date.day = (sint)day;
-	date.month = (sint)month;
-	date.year = ((sint)year) + 2000;
+	date = castingBitsToText(roomsAndDate, &rooms);
 	apt = makeApt(address, code, price, rooms, date, database_Entry_Date);
-	free(address);
 	return apt;
 }
 
-static void castingBitsToText(uchar roomsAndDate[3], unsigned short int* rooms, unsigned short int* day, unsigned short int* month,
-	unsigned short int* year) {
+static DATE castingBitsToText(uchar roomsAndDate[3], unsigned short int* rooms) {
 
+	unsigned short int temp;
+	unsigned short int day, month, year;
+	DATE date;
 	unsigned short int mask = MASK_WITH_N_LSB_SET(sint, 4);
-	(*rooms) = (0 | (roomsAndDate[0] >> 4));
+	temp = (0 | (roomsAndDate[0] >> 4));
 	mask = MASK_WITH_N_LSB_SET(sint, 4);
-	(*day) = (0 | (((mask & roomsAndDate[0]) << 1) | (1 & roomsAndDate[1])));
-	(*month) = (0 | ((mask & (roomsAndDate[1] >> 3))));
+	day = (0 | (((mask & roomsAndDate[0]) << 1) | (1 & roomsAndDate[1])));
+	month = (0 | ((mask & (roomsAndDate[1] >> 3))));
 	mask >>= 1;
-	(*year) = (0 | (((mask & roomsAndDate[1]) << 4) | (roomsAndDate[2] >> 4)));
+	year = (0 | (((mask & roomsAndDate[1]) << 4) | (roomsAndDate[2] >> 4)));
+	date.day = (sint)day;
+	date.month = (sint)month;
+	date.year = ((sint)year) + 2000;
+	(*rooms) = temp;
+	return date;
 }
 
-static uchar* castingTextToBits(unsigned short int rooms, unsigned short int day, unsigned short int month,
-	unsigned short int year) {
+static void castingTextToBits(uchar roomsAndDate[3], APT* cur) {
 
-	uchar roomsAndDate[3];
-	roomsAndDate[0] = 0 | ((rooms << 4) | (day >> 1));
-	roomsAndDate[1] = 0 | (((day << 7) | (month << 3) | (year >> 4)));
-	roomsAndDate[2] = 0 | (year << 4);
-	return roomsAndDate;
+	cur->date.year = cur->date.year - 2000;
+	roomsAndDate[0] = 0 | ((cur->rooms << 4) | (cur->date.day >> 1));
+	roomsAndDate[1] = 0 | (((cur->date.day << 7) | (cur->date.month << 3) | (cur->date.year >> 4)));
+	roomsAndDate[2] = 0 | (cur->date.year << 4);
 }
 
 static void writeDataBaseA(FILE* f_ptr) {
@@ -248,9 +249,9 @@ static void writeDataBaseB(FILE* f_ptr, STOCK_NODE* cur) {
 
 static void writeApt(FILE* f_ptr, APT* cur) {
 
-
 	sint addressLen;
-	uchar* roomsAndDate = castingTextToBits(cur->rooms, cur->date.day, cur->date.month, cur->date.year - 2000);
+	uchar roomsAndDate[3];
+	castingTextToBits(roomsAndDate, cur);
 	fwrite(&cur->code, 1, sizeof(cur->code), f_ptr);
 	addressLen = strlen(cur->address);
 	fwrite(&addressLen, 1, sizeof(addressLen), f_ptr);

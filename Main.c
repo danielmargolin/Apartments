@@ -51,6 +51,7 @@ void main() {
 	writeApts(&aptList);
 
 	puts("Good Bye!");
+
 }
 
 

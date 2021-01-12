@@ -1,26 +1,19 @@
-﻿  Files_Module.c
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(187,46): warning C4101: 'mask': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(236,19): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(236,19): message : consider using '%zd' in the format string
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(244,18): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(244,18): message : consider using '%zd' in the format string
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(255,35): warning C4267: '=': conversion from 'size_t' to 'sint', possible loss of data
-  Functions.c
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(46,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(212,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(235,18): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(319,62): warning C4047: 'function': 'FIND_PARAMS *' differs in levels of indirection from 'FIND_PARAMS (*)[10]'
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(319,55): warning C4024: 'getFindFunctions': different types for formal and actual parameter 3
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(320,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(434,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(435,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(443,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(444,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(452,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(453,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(586,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(587,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Main.c
-  Generating Code...
-C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(227): warning C4172: returning address of local variable or temporary: roomsAndDate
+﻿  Functions.c
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(50,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(202,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(227,18): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(284,27): warning C4047: '=': 'int' differs in levels of indirection from 'void *'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(320,69): warning C4028: formal parameter 2 different from declaration
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(328,64): warning C4047: 'function': 'int *' differs in levels of indirection from 'int'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(328,61): warning C4024: 'function through pointer': different types for formal and actual parameter 2
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(333,55): warning C4028: formal parameter 2 different from declaration
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(321,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(553,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(554,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(615,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(616,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(624,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(625,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(633,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(634,1): warning C4090: 'initializing': different 'const' qualifiers
   Final_Project.vcxproj -> C:\Users\shake\source\repos\danielmargolin\Apartments\x64\Debug\Final_Project.exe
