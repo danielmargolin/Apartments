@@ -48,6 +48,12 @@ void makeEmptyAptList(APT_LIST* lst) {
 	lst->size = 0;
 }
 
+void makeEmptyFindFunctionList(FIND_FUNCTIONS_LIST* lst) {
+
+	lst->head = NULL;
+	lst->size = 0;
+}
+
 STOCK_NODE* makeStockNode(char* command) {
 
 	STOCK_NODE* node = (STOCK_NODE*)malloc(sizeof(STOCK_NODE));
@@ -55,6 +61,30 @@ STOCK_NODE* makeStockNode(char* command) {
 	strcpy(node->command, command);
 	node->next = node->prev = NULL;
 	return node;
+}
+
+FIND_FUNCTION_NODE* makeFindFunctionNode(FIND_FUNCTION* findFunction, int param) {
+
+	FIND_FUNCTION_NODE* node = (FIND_FUNCTION_NODE*)malloc(sizeof(FIND_FUNCTION_NODE));
+	node->function = findFunction;
+	node->param = param;
+	node->next = NULL;
+	return node;
+}
+
+void freeFunctionList(FIND_FUNCTIONS_LIST* lst) {
+	if (lst->head) {
+		freeFunctionListRec(lst->head);
+	}
+	free(lst);
+}
+
+void freeFunctionListRec(FIND_FUNCTION_NODE* head) {
+	
+	if (head->next) {
+		freeFunctionListRec(head->next);
+	}
+	free(head);
 }
 
 void deletehead(STOCK* lst) {
@@ -193,6 +223,21 @@ void removeNode(APT_LIST* apt, APT* node) {
 
 		apt->head = apt->tail = NULL;
 		free(node);
+	}
+}
+
+void addToFunctionList(FIND_FUNCTIONS_LIST* lst, FIND_FUNCTION_NODE* node) {
+	FIND_FUNCTION_NODE* head = lst->head;
+	if (head == NULL) {
+		lst->head = node;
+		lst->size = 1;
+	}
+	else {
+		while (head->next != NULL) {
+			head = head->next;
+		}
+		head->next = node;
+		lst->size = lst->size + 1;
 	}
 }
 

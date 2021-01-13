@@ -28,6 +28,14 @@ void addToTailStockList(STOCK* stock, STOCK_NODE* node);
 
 void makeEmptyStockList(STOCK* lst);
 
+void makeEmptyFindFunctionList(FIND_FUNCTIONS_LIST* lst);
+
+FIND_FUNCTION_NODE* makeFindFunctionNode(FIND_FUNCTION* findFunction, int param);
+
+void addToFunctionList(FIND_FUNCTIONS_LIST* lst, FIND_FUNCTION_NODE* node);
+
+void freeFunctionList(FIND_FUNCTIONS_LIST* lst);
+
 void deletehead(STOCK* lst);
 
 void makeEmptyAptList(APT_LIST* lst);
@@ -63,5 +71,7 @@ void addToHead(APT_LIST* lst, APT* node);
 void addToTail(APT_LIST* lst, APT* node);
 
 uint nextPos(uint i);
+
+void freeFunctionListRec(FIND_FUNCTION_NODE* head);
 
 #endif
