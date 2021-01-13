@@ -35,6 +35,10 @@ typedef short int sint;
 
 typedef unsigned char uchar;
 
+#define TRUE 1
+
+#define FALSE 0
+
 #define ADDRESS 100
 
 #define COMMAND 100

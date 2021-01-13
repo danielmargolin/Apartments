@@ -73,17 +73,15 @@ FIND_FUNCTION_NODE* makeFindFunctionNode(FIND_FUNCTION* findFunction, int param)
 }
 
 void freeFunctionList(FIND_FUNCTIONS_LIST* lst) {
-	if (lst->head) {
+
+	if (lst->head)
 		freeFunctionListRec(lst->head);
-	}
-	free(lst);
 }
 
 void freeFunctionListRec(FIND_FUNCTION_NODE* head) {
 	
-	if (head->next) {
+	if (head->next)
 		freeFunctionListRec(head->next);
-	}
 	free(head);
 }
 
@@ -241,33 +239,7 @@ void addToFunctionList(FIND_FUNCTIONS_LIST* lst, FIND_FUNCTION_NODE* node) {
 	}
 }
 
-void reverseArrToList(APT** arr, APT_LIST* lst) {
-
-	uint i;
-	lst->head = arr[lst->size - 1];
-	lst->tail = arr[0];
-	for (i = 0; i < lst->size; i++) {
-
-		if (!i) {
-
-			arr[i]->prev = arr[i + 1];
-			arr[i]->next = NULL;
-		}
-		else if (i == (lst->size - 1)) {
-
-			arr[i]->prev = NULL;
-			arr[i]->next = arr[i - 1];
-		}
-		else {
-
-			arr[i]->prev = arr[i + 1];
-			arr[i]->next = arr[i - 1];
-		}
-	}
-}
-
 void arrToList(APT** arr, APT_LIST* lst) {
-
 
 	lst->head = arr[0];
 	lst->tail = arr[lst->size - 1];

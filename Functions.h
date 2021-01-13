@@ -39,7 +39,7 @@ APT_LIST findMinRooms(APT_LIST apt, int param);
 
 APT_LIST findLastDays(APT_LIST apt, int param);
 
-FIND_FUNCTIONS_LIST* getFindFunctions(char* command, char* sort);
+FIND_FUNCTIONS_LIST getFindFunctions(char* command, char* sort);
 
 void addApt(APT_LIST* aptList, char* command);
 
@@ -56,6 +56,8 @@ DATE makeDate(char* d);
 void addToStock(STOCK* stock, char* command);
 
 void sortList(APT_LIST* apt, char* type, char order);
+
+APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList);
 
 #endif
 

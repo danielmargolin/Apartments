@@ -13,12 +13,11 @@
 
 #define ___DEBUG_APARTMENTS_LIST___
 
-//#define ___PRINTING_FILE_DEBUGGING___
+#define ___PRINTING_FILE_DEBUGGING___
 
 
 #include "Structs_And_Consts.h"
 #include "Functions.h"
-
 
 void main() {
 

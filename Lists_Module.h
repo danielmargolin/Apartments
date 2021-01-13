@@ -60,8 +60,6 @@ APT** listToArr(APT_LIST* lst);
 
 void arrToList(APT** arr, APT_LIST* lst);
 
-void reverseArrToList(APT** arr, APT_LIST* lst);
-
 void deleteList(APT_LIST* lst);
 
 void deleteListRec(APT* node);

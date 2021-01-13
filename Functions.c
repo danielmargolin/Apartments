@@ -28,7 +28,11 @@ static void replaceFirstCommand(char* command);
 static int sortByPrice(const void* element1, const void* element2);
 static int sortByRooms(const void* element1, const void* element2);
 static int sortByDate(const void* element1, const void* element2);
-static void reallocationFindFuncs(FIND_FUNCTION** findFunctions, int* params, int size);
+static int reverseSortByDate(const void* element1, const void* element2);
+static int reverseSortByRooms(const void* element1, const void* element2);
+static int reverseSortByPrice(const void* element1, const void* element2);
+static uint checkDate(APT* cur, int day, int month, int year);
+static int sortByDataBase(const void* element1, const void* element2);
 
 /*************** Public Functions ****************/
 
@@ -69,131 +73,165 @@ void addToStock(STOCK* stock, char* command) {
 
 APT_LIST findMaxPrice(APT_LIST apt, int param) {
 
-	int price = param;
+	sortList(&apt, "Price", 'r');
+	if (param >= apt.head->price)
+		return apt;
+	if (param < apt.tail->price) {
 
-	APT* cur = apt.head;
-	APT* temp;
-	uint i, count = 0;
-	for (i = 0; i < apt.size && cur; i++) {
-
-		if (cur->price > price) {
-
-			temp = cur;
-			cur = cur->next;
-			removeNode(&apt, temp);
-		}
-		else {
-
-			cur = cur->next;
-			count++;
-		}
+		deleteList(&apt);
+		makeEmptyAptList(&apt);
+		return apt;
 	}
-	apt.size = count;
+	APT* cur = apt.head;
+	APT_LIST aptToDelete;
+	aptToDelete.head = apt.head;
+	uint count = 0;
+
+	while (cur && cur->price > param) {
+
+		cur = cur->next;
+		count++;
+	}
+	apt.head = cur;
+	aptToDelete.tail = cur->prev;
+	apt.head->prev = NULL;
+	aptToDelete.tail->next = NULL;
+	deleteList(&aptToDelete);
+	apt.size = apt.size - count;
 	return apt;
 }
 
 APT_LIST findMinPrice(APT_LIST apt, int param) {
 
-	int price = param;
-	APT* cur = apt.head;
-	APT* temp;
-	uint i, count = 0;
-	for (i = 0; i < apt.size && cur; i++) {
+	sortList(&apt, "Price", 's');
+	if (param <= apt.head->price)
+		return apt;
+	if (param > apt.tail->price) {
 
-		if (cur->price < price) {
-
-			temp = cur;
-			cur = cur->next;
-			removeNode(&apt, temp);
-		}
-		else {
-
-			cur = cur->next;
-			count++;
-		}
+		deleteList(&apt);
+		makeEmptyAptList(&apt);
+		return apt;
 	}
-	apt.size = count;
+	APT* cur = apt.head;
+	APT_LIST aptToDelete;
+	aptToDelete.head = apt.head;
+	uint count = 0;
+
+	while (cur && cur->price < param) {
+
+		cur = cur->next;
+		count++;
+	}
+	apt.head = cur;
+	aptToDelete.tail = cur->prev;
+	apt.head->prev = NULL;
+	aptToDelete.tail->next = NULL;
+	deleteList(&aptToDelete);
+	apt.size = apt.size - count;
 	return apt;
 }
 
 APT_LIST findDate(APT_LIST apt, int param) {
 
-	int dateAsNumber = param;
-	int year = dateAsNumber % 10000;
-	dateAsNumber = dateAsNumber / 10000;
-	int month = dateAsNumber % 100;
-	dateAsNumber = dateAsNumber / 100;
-	int day = dateAsNumber % 100;
-	
+	int year = param % 10000;
+	param = param / 10000;
+	int month = param % 100;
+	param = param / 100;
+	int day = param % 100;
+	sortList(&apt, "Date", 'r');
+
+	if (!checkDate(apt.head, day, month, year))
+		return apt;
+	if (checkDate(apt.tail, day, month, year)) {
+
+		deleteList(&apt);
+		makeEmptyAptList(&apt);
+		return apt;
+	}
 	APT* cur = apt.head;
-	APT* temp;
 	uint i, count = 0;
-	for (i = 0; i < apt.size && cur; i++) {
+	APT_LIST aptToDelete;
+	aptToDelete.head = apt.head;
+	while (cur && checkDate(cur, day, month, year)) {
 
-		if (cur->date.year > year || (cur->date.year == year && cur->date.month > month) 
-			|| (cur->date.year == year && cur->date.month == month && cur->date.day > day)) {
-
-			temp = cur;
-			cur = cur->next;
-			removeNode(&apt, temp);
-		}
-		else {
-
-			cur = cur->next;
-			count++;
-		}
+		cur = cur->next;
+		count++;
 	}
 
-	apt.size = count;
+	apt.head = cur;
+	aptToDelete.tail = cur->prev;
+	apt.head->prev = NULL;
+	aptToDelete.tail->next = NULL;
+	deleteList(&aptToDelete);
+	apt.size = apt.size - count;
 	return apt;
+}
+
+static uint checkDate(APT* cur, int day, int month, int year) {
+
+	if (cur->date.year > year || (cur->date.year == year && cur->date.month > month)
+		|| (cur->date.year == year && cur->date.month == month && cur->date.day > day))
+		return TRUE;
+	return FALSE;
 }
 
 APT_LIST findMaxRooms(APT_LIST apt, int param) {
 
-	int numOfRooms = param;
-	APT* cur = apt.head;
-	APT* temp;
-	uint i, count = 0;
-	for (i = 0; i < apt.size && cur; i++) {
+	sortList(&apt, "Rooms", 'r');
+	if (param >= apt.head->rooms)
+		return apt;
+	if (param < apt.tail->rooms) {
 
-		if (cur->rooms > numOfRooms) {
-
-			temp = cur;
-			cur = cur->next;
-			removeNode(&apt, temp);
-		}
-		else {
-
-			cur = cur->next;
-			count++;
-		}
+		deleteList(&apt);
+		makeEmptyAptList(&apt);
+		return apt;
 	}
-	apt.size = count;
+	APT* cur = apt.head;
+	APT_LIST aptToDelete;
+	aptToDelete.head = apt.head;
+	uint count = 0;
+
+	while (cur && cur->rooms > param) {
+
+		cur = cur->next;
+		count++;
+	}
+	apt.head = cur;
+	aptToDelete.tail = cur->prev;
+	apt.head->prev = NULL;
+	aptToDelete.tail->next = NULL;
+	deleteList(&aptToDelete);
+	apt.size = apt.size - count;
 	return apt;
 }
 
 APT_LIST findMinRooms(APT_LIST apt, int param) {
 
-	int numOfRooms = param;
-	APT* cur = apt.head;
-	APT* temp;
-	uint i, count = 0;
-	for (i = 0; i < apt.size && cur; i++) {
+	sortList(&apt, "Rooms", 's');
+	if (param <= apt.head->rooms)
+		return apt;
+	if (param > apt.tail->rooms) {
 
-		if (cur->rooms < numOfRooms) {
-
-			temp = cur;
-			cur = cur->next;
-			removeNode(&apt, temp);
-		}
-		else {
-
-			cur = cur->next;
-			count++;
-		}
+		deleteList(&apt);
+		makeEmptyAptList(&apt);
+		return apt;
 	}
-	apt.size = count;
+	APT* cur = apt.head;
+	APT_LIST aptToDelete;
+	aptToDelete.head = apt.head;
+	uint count = 0;
 
+	while (cur && cur->rooms < param) {
+
+		cur = cur->next;
+		count++;
+	}
+	apt.head = cur;
+	aptToDelete.tail = cur->prev;
+	apt.head->prev = NULL;
+	aptToDelete.tail->next = NULL;
+	deleteList(&aptToDelete);
+	apt.size = apt.size - count;
 	return apt;
 }
 
@@ -204,72 +242,91 @@ void sortList(APT_LIST* apt, char* type, char order) {
 	APT** arr;
 	arr = listToArr(apt);
 
-	if (strcmp(type, "Price") == 0)
-		qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
-	else if (strcmp(type, "Date") == 0)
-		qsort(arr, apt->size, sizeof(APT*), &sortByDate);
-	else if (strcmp(type, "Rooms") == 0)
-		qsort(arr, apt->size, sizeof(APT*), &sortByRooms);
+	if (strcmp(type, "Price") == 0) {
 
-	if (order == 'r')
-		reverseArrToList(arr, apt);
-	else
-		arrToList(arr, apt);
+		if (order == 'r')
+			qsort(arr, apt->size, sizeof(APT*), &reverseSortByPrice);
+		else
+			qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
+	}
+	else if (strcmp(type, "Date") == 0) {
+
+		if (order == 'r')
+			qsort(arr, apt->size, sizeof(APT*), &reverseSortByDate);
+		else
+			qsort(arr, apt->size, sizeof(APT*), &sortByDate);
+	}
+	else if (strcmp(type, "Rooms") == 0) {
+
+		if (order == 'r')
+			qsort(arr, apt->size, sizeof(APT*), &reverseSortByRooms);
+		else
+			qsort(arr, apt->size, sizeof(APT*), &sortByRooms);
+	}
+	else if (strcmp(type, "DataBaseDate") == 0)
+			qsort(arr, apt->size, sizeof(APT*), &sortByDataBase);
+
+	arrToList(arr, apt);
 }
 
 APT_LIST findLastDays(APT_LIST apt, int param) {
 
+	
 	if (!param)
 		return apt;
-	int numOfDays = param;
+	sortList(&apt, "DataBaseDate", 'r');
 	time_t now;
 	time(&now);
+	if (difftime(now, apt.tail->database_Entry_Date) <= param)
+		return apt;
+	if (difftime(now, apt.head->database_Entry_Date) > param) {
+
+		deleteList(&apt);
+		makeEmptyAptList(&apt);
+		return apt;
+	}
+
 	uint count = 0, i;
 	APT* cur = apt.head;
-
+	APT_LIST lstToDelete;
+	lstToDelete.tail = apt.tail;
 	while (cur && difftime(now, cur->database_Entry_Date) <= param) {
 
 		count++;
 		cur = cur->next;
 	}
-
-	if (!cur)
-return apt;
-
-apt.tail = cur;
-apt.size = count;
-if (apt.tail->next) {
-
-	APT_LIST lstToDelete;
-	lstToDelete.head = apt.tail->next;
-	lstToDelete.tail = apt.tail;
+	apt.tail = cur->prev;
+	lstToDelete.head = cur;
+	apt.tail->next = NULL;
+	lstToDelete.head->prev = NULL;
 	deleteList(&lstToDelete);
-}
-return apt;
+	apt.size = count;
+	return apt;
 }
 
-FIND_FUNCTIONS_LIST* getFindFunctions(char* command, char* sort) {
-	FIND_FUNCTIONS_LIST* functionsLst = (FIND_FUNCTIONS_LIST*)malloc(sizeof(FIND_FUNCTIONS_LIST));
-	makeEmptyFindFunctionList(functionsLst);
+FIND_FUNCTIONS_LIST getFindFunctions(char* command, char* sort) {
+
+	FIND_FUNCTIONS_LIST functionsLst;
+	makeEmptyFindFunctionList(&functionsLst);
 	char* currentWord = strtok(command, DELIMETERS);
 
 	while (currentWord) {
 
 		if (strcmp(currentWord, "MaxPrice") == 0) {
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMaxPrice, atoi(strtok(NULL, DELIMETERS)));
-			addToFunctionList(functionsLst, node);
+			addToFunctionList(&functionsLst, node);
 		}
 		else if (strcmp(currentWord, "MinPrice") == 0) {
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMinPrice, atoi(strtok(NULL, DELIMETERS)));
-			addToFunctionList(functionsLst, node);
+			addToFunctionList(&functionsLst, node);
 		}
 		else if (strcmp(currentWord, "MinNumRooms") == 0) {
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMinRooms, atoi(strtok(NULL, DELIMETERS)));
-			addToFunctionList(functionsLst, node);
+			addToFunctionList(&functionsLst, node);
 		}
 		else if (strcmp(currentWord, "MaxNumRooms") == 0) {
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMaxRooms, atoi(strtok(NULL, DELIMETERS)));
-			addToFunctionList(functionsLst, node);
+			addToFunctionList(&functionsLst, node);
 		}
 		else if (strcmp(currentWord, "Enter") == 0) {
 			char* temp = strtok(NULL, DELIMETERS);
@@ -279,11 +336,11 @@ FIND_FUNCTIONS_LIST* getFindFunctions(char* command, char* sort) {
 			else
 				param = NULL;
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findLastDays, param);
-			addToFunctionList(functionsLst, node);
+			addToFunctionList(&functionsLst, node);
 		}
 		else if (strcmp(currentWord, "Date") == 0) {
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findDate, atoi(strtok(NULL, DELIMETERS)));
-			addToFunctionList(functionsLst, node);
+			addToFunctionList(&functionsLst, node);
 		}
 		else if (strcmp(currentWord, "sr") == 0)
 			(*sort) = 'r';
@@ -296,23 +353,15 @@ FIND_FUNCTIONS_LIST* getFindFunctions(char* command, char* sort) {
 	return functionsLst;
 }
 
-static void reallocationFindFuncs(FIND_FUNCTION** findFunctions, int* params, int size) {
+APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList) {
 
-	puts("start");
-	findFunctions = (FIND_FUNCTION**)realloc(findFunctions, size * 2 + 1);
-	allocationCheck(findFunctions);
-	params = (int*)realloc(params, size * 2 + 1);
-	allocationCheck(params);
-	puts("end");
-
-}
-
-APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST* lst, APT_LIST* aptList) {
 	APT_LIST filtered_List;
 	makeEmptyAptList(&filtered_List);
 	copyList(&filtered_List, aptList);
-	FIND_FUNCTION_NODE* head = lst->head;
-	while (head != NULL) {
+
+	FIND_FUNCTION_NODE* head = lst.head;
+
+	while (head) {
 		APT_LIST(*findFunction)(APT_LIST, int*);
 		findFunction = head->function;
 		filtered_List = (*findFunction)(filtered_List, head->param);
@@ -326,25 +375,25 @@ void findApt(APT_LIST* aptList, char* command) {
 	char sort = '\0';
 	APT_LIST(**findFunctions)(APT_LIST, int*);
 
-	FIND_FUNCTIONS_LIST* functionsLst;
+	FIND_FUNCTIONS_LIST functionsLst;
 	functionsLst = getFindFunctions(command + 8, &sort);
 	APT_LIST filtered_List;
 	filtered_List = executeFindFunctions(functionsLst, aptList);
 	if (sort)
 		sortList(&filtered_List, "Price", sort);
 
-	if (functionsLst->size == 1) {
+	if (functionsLst.size == 1) {
+
 		APT_LIST(*findFunction)(APT_LIST, int*);
-		findFunction = functionsLst->head->function;
-		if (*findFunction == &findLastDays) {
+		findFunction = functionsLst.head->function;
+		if (*findFunction == &findLastDays) 
 			printOnlyCodes(&filtered_List);
-		}
-		else {
+		else 
 			printList(&filtered_List);
-		}
 	}
 	else
 		printList(&filtered_List);
+
 	freeFunctionList(&functionsLst);
 }
 
@@ -631,6 +680,15 @@ static int sortByPrice(const void* element1, const void* element2) {
 	return a - b;
 }
 
+static int reverseSortByPrice(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const int a = (int)(*seg1)->price;
+	const int b = (int)(*seg2)->price;
+	return b - a;
+}
+
 static int sortByRooms(const void* element1, const void* element2) {
 
 	APT** seg1 = element1;
@@ -638,6 +696,15 @@ static int sortByRooms(const void* element1, const void* element2) {
 	const int a = (int)(*seg1)->rooms;
 	const int b = (int)(*seg2)->rooms;
 	return a - b;
+}
+
+static int reverseSortByRooms(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const int a = (int)(*seg1)->rooms;
+	const int b = (int)(*seg2)->rooms;
+	return b - a;
 }
 
 static int sortByDate(const void* element1, const void* element2) {
@@ -658,4 +725,38 @@ static int sortByDate(const void* element1, const void* element2) {
 	else {
 		return a.year - b.year;
 	}
+}
+
+static int reverseSortByDate(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const DATE a = (*seg1)->date;
+	const DATE b = (*seg2)->date;
+
+	if (a.year == b.year) {
+		if (a.month == b.month) {
+			return b.day - a.day;
+		}
+		else {
+			return b.month - a.month;
+		}
+	}
+	else {
+		return b.year - a.year;
+	}
+}
+
+static int sortByDataBase(const void* element1, const void* element2) {
+
+	APT** seg1 = element1;
+	APT** seg2 = element2;
+	const time_t a = (time_t)(*seg1)->database_Entry_Date;
+	const time_t b = (time_t)(*seg2)->database_Entry_Date;
+	double dif = difftime(b, a);
+	if (dif < 0)
+		return -1;
+	if (dif > 0)
+		return 1;
+	return 0;
 }

@@ -1,19 +1,52 @@
-﻿  Functions.c
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(50,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(202,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(227,18): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(284,27): warning C4047: '=': 'int' differs in levels of indirection from 'void *'
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(320,69): warning C4028: formal parameter 2 different from declaration
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(328,64): warning C4047: 'function': 'int *' differs in levels of indirection from 'int'
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(328,61): warning C4024: 'function through pointer': different types for formal and actual parameter 2
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(333,55): warning C4028: formal parameter 2 different from declaration
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(321,7): warning C4101: 'i': unreferenced local variable
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(553,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(554,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(615,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(616,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(624,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(625,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(633,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(634,1): warning C4090: 'initializing': different 'const' qualifiers
+﻿  Files_Module.c
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(190,21): warning C4101: 'mask': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(237,19): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(237,19): message : consider using '%zd' in the format string
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(245,18): warning C4477: 'fprintf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'size_t'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(245,18): message : consider using '%zd' in the format string
+C:\Users\shake\source\repos\danielmargolin\Apartments\Files_Module.c(256,35): warning C4267: '=': conversion from 'size_t' to 'sint', possible loss of data
+  Functions.c
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(54,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(152,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(240,7): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(289,18): warning C4101: 'i': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(316,65): warning C4047: 'function': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(316,52): warning C4024: 'makeFindFunctionNode': different types for formal and actual parameter 1
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(320,65): warning C4047: 'function': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(320,52): warning C4024: 'makeFindFunctionNode': different types for formal and actual parameter 1
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(324,65): warning C4047: 'function': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(324,52): warning C4024: 'makeFindFunctionNode': different types for formal and actual parameter 1
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(328,65): warning C4047: 'function': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(328,52): warning C4024: 'makeFindFunctionNode': different types for formal and actual parameter 1
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(337,17): warning C4047: '=': 'int' differs in levels of indirection from 'void *'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(338,65): warning C4047: 'function': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(338,52): warning C4024: 'makeFindFunctionNode': different types for formal and actual parameter 1
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(342,61): warning C4047: 'function': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(342,52): warning C4024: 'makeFindFunctionNode': different types for formal and actual parameter 1
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(366,32): warning C4047: '=': 'APT_LIST (__cdecl *)(APT_LIST,int *)' differs in levels of indirection from 'FIND_FUNCTION *'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(367,61): warning C4047: 'function': 'int *' differs in levels of indirection from 'int'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(367,54): warning C4024: 'findFunction': different types for formal and actual parameter 2
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(388,45): warning C4047: '=': 'APT_LIST (__cdecl *)(APT_LIST,int *)' differs in levels of indirection from 'FIND_FUNCTION *'
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(389,37): warning C4028: formal parameter 2 different from declaration
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(376,13): warning C4101: 'findFunctions': unreferenced local variable
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(614,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(615,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(676,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(677,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(685,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(686,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(694,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(695,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(703,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(704,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(712,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(713,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(732,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(733,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(752,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(753,1): warning C4090: 'initializing': different 'const' qualifiers
+  Lists_Module.c
+C:\Users\shake\source\repos\danielmargolin\Apartments\Lists_Module.c(132,17): warning C4013: 'allocationCheck' undefined; assuming extern returning int
+  Main.c
+  Generating Code...
   Final_Project.vcxproj -> C:\Users\shake\source\repos\danielmargolin\Apartments\x64\Debug\Final_Project.exe
