@@ -111,5 +111,17 @@ typedef struct _stock {
 
 typedef APT_LIST(*FIND_FUNCTION)(APT_LIST, int);
 
+typedef struct find_function_node {
+	FIND_FUNCTION* function;
+	int param;
+	struct find_function_node* next;
+} FIND_FUNCTION_NODE;
+
+typedef struct find_functions_list {
+	FIND_FUNCTION_NODE* head;
+	uint size;
+} FIND_FUNCTIONS_LIST;
+
+
 #endif
 

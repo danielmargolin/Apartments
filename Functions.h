@@ -39,7 +39,7 @@ APT_LIST findMinRooms(APT_LIST apt, int param);
 
 APT_LIST findLastDays(APT_LIST apt, int param);
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params, char *sort);
+FIND_FUNCTIONS_LIST* getFindFunctions(char* command, char* sort);
 
 void addApt(APT_LIST* aptList, char* command);
 

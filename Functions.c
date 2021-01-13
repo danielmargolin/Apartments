@@ -234,70 +234,66 @@ APT_LIST findLastDays(APT_LIST apt, int param) {
 	}
 
 	if (!cur)
-		return apt;
+return apt;
 
-	apt.tail = cur;
-	apt.size = count;
-	if (apt.tail->next) {
+apt.tail = cur;
+apt.size = count;
+if (apt.tail->next) {
 
-		APT_LIST lstToDelete;
-		lstToDelete.head = apt.tail->next;
-		lstToDelete.tail = apt.tail;
-		deleteList(&lstToDelete);
-	}
-	return apt;
+	APT_LIST lstToDelete;
+	lstToDelete.head = apt.tail->next;
+	lstToDelete.tail = apt.tail;
+	deleteList(&lstToDelete);
+}
+return apt;
 }
 
-FIND_FUNCTION* getFindFunctions(char* command, int* size, int* params, char *sort) {
-
-	FIND_FUNCTION* findFunctions = (FIND_FUNCTION*)malloc(10 * sizeof(FIND_FUNCTION));
+FIND_FUNCTIONS_LIST* getFindFunctions(char* command, char* sort) {
+	FIND_FUNCTIONS_LIST* functionsLst = (FIND_FUNCTIONS_LIST*)malloc(sizeof(FIND_FUNCTIONS_LIST));
+	makeEmptyFindFunctionList(functionsLst);
 	char* currentWord = strtok(command, DELIMETERS);
 
 	while (currentWord) {
-			
+
 		if (strcmp(currentWord, "MaxPrice") == 0) {
-			findFunctions[(*size)] = &findMaxPrice;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
-			(*size)++;
+			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMaxPrice, atoi(strtok(NULL, DELIMETERS)));
+			addToFunctionList(functionsLst, node);
 		}
 		else if (strcmp(currentWord, "MinPrice") == 0) {
-			findFunctions[(*size)] = &findMinPrice;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
-			(*size)++;
+			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMinPrice, atoi(strtok(NULL, DELIMETERS)));
+			addToFunctionList(functionsLst, node);
 		}
 		else if (strcmp(currentWord, "MinNumRooms") == 0) {
-			findFunctions[(*size)] = &findMinRooms;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
-			(*size)++;
+			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMinRooms, atoi(strtok(NULL, DELIMETERS)));
+			addToFunctionList(functionsLst, node);
 		}
 		else if (strcmp(currentWord, "MaxNumRooms") == 0) {
-			findFunctions[(*size)] = &findMaxRooms;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
-			(*size)++;
+			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findMaxRooms, atoi(strtok(NULL, DELIMETERS)));
+			addToFunctionList(functionsLst, node);
 		}
 		else if (strcmp(currentWord, "Enter") == 0) {
-			findFunctions[(*size)] = &findLastDays;
 			char* temp = strtok(NULL, DELIMETERS);
+			int param;
 			if (temp)
-				params[(*size)] = DAYS_TO_SECONDS * atoi(temp);
+				param = DAYS_TO_SECONDS * atoi(temp);
 			else
-				params[(*size)] = NULL;
-			(*size)++;
+				param = NULL;
+			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findLastDays, param);
+			addToFunctionList(functionsLst, node);
 		}
 		else if (strcmp(currentWord, "Date") == 0) {
-			findFunctions[(*size)] = &findDate;
-			params[(*size)] = atoi(strtok(NULL, DELIMETERS));
-			(*size)++;
+			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findDate, atoi(strtok(NULL, DELIMETERS)));
+			addToFunctionList(functionsLst, node);
 		}
 		else if (strcmp(currentWord, "sr") == 0)
 			(*sort) = 'r';
-	
+
 		else if (strcmp(currentWord, "s") == 0)
 			(*sort) = 's';
 
 		currentWord = strtok(NULL, DELIMETERS);
 	}
-	return findFunctions;
+	return functionsLst;
 }
 
 static void reallocationFindFuncs(FIND_FUNCTION** findFunctions, int* params, int size) {
@@ -311,29 +307,45 @@ static void reallocationFindFuncs(FIND_FUNCTION** findFunctions, int* params, in
 
 }
 
-void findApt(APT_LIST* aptList, char* command) {
-
-	int size = 0;
-	int params[10];
-	char sort = '\0';
-	APT_LIST(**findFunctions)(APT_LIST, int*);
-	findFunctions = getFindFunctions(command + 8, &size, params, &sort);
-	uint i;
+APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST* lst, APT_LIST* aptList) {
 	APT_LIST filtered_List;
 	makeEmptyAptList(&filtered_List);
 	copyList(&filtered_List, aptList);
-	for (int i = 0; i < size; i++) {
-
-		if (findFunctions[i])
-			filtered_List = (*findFunctions[i])(filtered_List, params[i]);
+	FIND_FUNCTION_NODE* head = lst->head;
+	while (head != NULL) {
+		APT_LIST(*findFunction)(APT_LIST, int*);
+		findFunction = head->function;
+		filtered_List = (*findFunction)(filtered_List, head->param);
+		head = head->next;
 	}
+	return filtered_List;
+}
+
+void findApt(APT_LIST* aptList, char* command) {
+
+	char sort = '\0';
+	APT_LIST(**findFunctions)(APT_LIST, int*);
+
+	FIND_FUNCTIONS_LIST* functionsLst;
+	functionsLst = getFindFunctions(command + 8, &sort);
+	APT_LIST filtered_List;
+	filtered_List = executeFindFunctions(functionsLst, aptList);
 	if (sort)
 		sortList(&filtered_List, "Price", sort);
 
-	if (size == 1 && (*findFunctions[0]) == &findLastDays)
-		printOnlyCodes(&filtered_List);
+	if (functionsLst->size == 1) {
+		APT_LIST(*findFunction)(APT_LIST, int*);
+		findFunction = functionsLst->head->function;
+		if (*findFunction == &findLastDays) {
+			printOnlyCodes(&filtered_List);
+		}
+		else {
+			printList(&filtered_List);
+		}
+	}
 	else
 		printList(&filtered_List);
+	freeFunctionList(&functionsLst);
 }
 
 void addApt(APT_LIST* aptList, char* command) {
