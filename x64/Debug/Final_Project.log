@@ -20,19 +20,19 @@ C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(358,54): warni
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(376,77): warning C4047: '==': 'FIND_FUNCTION *' differs in levels of indirection from 'APT_LIST (__cdecl *)(APT_LIST,int)'
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(580,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(581,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(641,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(642,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(643,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(650,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(651,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(652,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(659,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(660,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(661,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(668,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(669,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(670,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(677,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(678,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(679,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(697,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(698,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(699,1): warning C4090: 'initializing': different 'const' qualifiers
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(717,1): warning C4090: 'initializing': different 'const' qualifiers
 C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(718,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(719,1): warning C4090: 'initializing': different 'const' qualifiers
-C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(756,21): warning C4244: '=': conversion from 'time_t' to 'int', possible loss of data
+C:\Users\shake\source\repos\danielmargolin\Apartments\Functions.c(755,21): warning C4244: '=': conversion from 'time_t' to 'int', possible loss of data
   Final_Project.vcxproj -> C:\Users\shake\source\repos\danielmargolin\Apartments\x64\Debug\Final_Project.exe
