@@ -560,7 +560,7 @@ static void printHistory(STOCK* stock) {
 
 static void replaceLastCommand(STOCK* stock, char* command) {
 
-	int place = atoi(command + 1);
+	int place = atoi(command);
 	if (place < N - 1) {
 		replaceFirstCommand(short_term_history[place + 1]);
 		return;
@@ -615,8 +615,7 @@ static void replaceFirstCommand(char* command) {
 
 static void lastCommand(APT_LIST* aptList, STOCK* stock, char* command) {
 
-	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(short_term_history[1]));
-	strcpy(short_term_history[0], short_term_history[1]);
+	replaceLastCommand(stock, "0");
 	interpretation(aptList, stock, short_term_history[0]);
 }
 
