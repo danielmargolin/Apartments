@@ -95,6 +95,7 @@ APT_LIST findMaxPrice(APT_LIST apt, int param) {
 	}
 	splitAndDelete(&apt, &aptToDelete, cur);
 	apt.size = apt.size - count;
+	return apt;
 }
 
 APT_LIST findMinPrice(APT_LIST apt, int param) {
@@ -349,6 +350,9 @@ APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList) {
 	FIND_FUNCTION_NODE* head = lst.head;
 
 	while (head) {
+
+		if (!filtered_List.head)
+			return filtered_List;
 		APT_LIST(*findFunction)(APT_LIST, int*);
 		findFunction = head->function;
 		filtered_List = (*findFunction)(filtered_List, head->param);
@@ -365,11 +369,10 @@ void findApt(APT_LIST* aptList, char* command) {
 	APT_LIST filtered_List;
 	makeEmptyAptList(&filtered_List);
 	filtered_List = executeFindFunctions(functionsLst, aptList);
-	if(filtered_List.head)
-		filtered_List.head->prev = filtered_List.tail->next = NULL;
 	if (sort)
 		sortList(&filtered_List, "Price", sort);
 
+	filtered_List.head->prev = filtered_List.tail->next = NULL;
 	if (functionsLst.size == 1 && functionsLst.head->function == &findLastDays && functionsLst.head->param != -2)
 		printOnlyCodes(&filtered_List);
 	else
