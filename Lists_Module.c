@@ -12,29 +12,16 @@
 */
 #include "Lists_Module.h"
 
+/*************** Static Functions Prototypes ****************/
 
-void addToHeadStockList(STOCK* stock, STOCK_NODE* node) {
+static void printOnlyCodesRec(APT* apt);
+static void printApt(APT* apt);
+static void removeInnerNode(APT* node);
+static void removeHead(APT_LIST* apt);
+static void removeTail(APT_LIST* apt);
+static void freeFunctionListRec(FIND_FUNCTION_NODE* head);
 
-	if (!stock->head)
-		stock->head = stock->tail = node;
-	else {
-
-		node->next = stock->head;
-		stock->head->prev = node;
-		stock->head = node;
-	}
-}
-
-void addToTailStockList(STOCK* stock, STOCK_NODE* node) {
-
-	if (!stock->head)
-		stock->head = stock->tail = node;
-	else {
-		stock->tail->next = node;
-		node->prev = stock->tail;
-		stock->tail = node;
-	}
-}
+/*************** Public Functions ****************/
 
 void makeEmptyStockList(STOCK* lst) {
 
@@ -76,13 +63,6 @@ void freeFunctionList(FIND_FUNCTIONS_LIST* lst) {
 
 	if (lst->head)
 		freeFunctionListRec(lst->head);
-}
-
-void freeFunctionListRec(FIND_FUNCTION_NODE* head) {
-	
-	if (head->next)
-		freeFunctionListRec(head->next);
-	free(head);
 }
 
 void deletehead(STOCK* lst) {
@@ -131,7 +111,8 @@ APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_
 	APT* apt = (APT*)malloc(sizeof(APT));
 	allocationCheck(apt);
 	apt->prev = apt->next = NULL;
-	apt->address = (char*)calloc(strlen(ad), sizeof(char));
+	apt->address = (char*)calloc(strlen(ad)+1, sizeof(char));
+	apt->address[strlen(ad)] = '\0';
 	allocationCheck(apt->address);
 	strcpy(apt->address, ad);
 	apt->code = code;
@@ -144,35 +125,18 @@ APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_
 
 void printList(APT_LIST* lst) {
 
-	if (!lst->size) {
-
-		puts("EMPTY");
-		return;
-	}
-	else {
-
-		APT* cur = lst->head;
-		uint i;
-		for (i = 0; i < lst->size && cur; i++) {
-
-			printApt(cur);
-			puts("");
-			cur = cur->next;
-		}
-	}
+	if (lst->head)
+		printApt(lst->head);
+	else
+		puts("There are no such apartments in the database");
 }
 
-void printApt(APT* apt) {
+void printOnlyCodes(APT_LIST* lst) {
 
-	struct tm* info;
-	char buffer[80];
-	info = localtime(&apt->database_Entry_Date);
-	strftime(buffer, 80, "%x", info);
-	uint month = atoi(strtok(buffer, "/"));
-	uint day = atoi(strtok(NULL, "/"));
-	uint year = 2000 + atoi(strtok(NULL, "/"));
-	printf("\n*************\nAddress: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d",
-		apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
+	if (lst->head)
+		printOnlyCodesRec(lst->head);
+	else
+		puts("There are no such apartments in the database");
 }
 
 void copyList(APT_LIST* target, APT_LIST* source) {
@@ -186,27 +150,7 @@ void copyList(APT_LIST* target, APT_LIST* source) {
 		cur = cur->next;
 
 	}
-}
-
-void removeInnerNode(APT* node) {
-
-	node->prev->next = node->next;
-	node->next->prev = node->prev;
-	free(node);
-}
-
-void removeHead(APT_LIST* apt) {
-
-	apt->head = apt->head->next;
-	free(apt->head->prev);
-	apt->head->prev = NULL;
-}
-
-void removeTail(APT_LIST* apt) {
-
-	apt->tail = apt->tail->prev;
-	free(apt->tail->next);
-	apt->tail->next = NULL;
+	target->head->prev = target->tail->next = NULL;
 }
 
 void removeNode(APT_LIST* apt, APT* node) {
@@ -281,16 +225,22 @@ APT** listToArr(APT_LIST* lst) {
 	return arr;
 }
 
-void deleteList(APT_LIST* lst) {
+void freeList(APT_LIST* lst) {
 
 	if (lst->head)
-		deleteListRec(lst->head);
+		freeListRec(lst->head);
 }
 
-void deleteListRec(APT* node) {
+void freeListRec(APT* node) {
 
 	if (node->next)
-		deleteListRec(node->next);
+		freeListRec(node->next);
+	deleteNode(node);
+}
+
+void deleteNode(APT* node) {
+
+	free(node->address);
 	free(node);
 }
 
@@ -299,4 +249,80 @@ uint nextPos(uint i) {
 	if (short_term_history[i])
 		return nextPos(++i);
 	return i;
+}
+
+void addToHeadStockList(STOCK* stock, STOCK_NODE* node) {
+
+	if (!stock->head)
+		stock->head = stock->tail = node;
+	else {
+
+		node->next = stock->head;
+		stock->head->prev = node;
+		stock->head = node;
+	}
+}
+
+void addToTailStockList(STOCK* stock, STOCK_NODE* node) {
+
+	if (!stock->head)
+		stock->head = stock->tail = node;
+	else {
+		stock->tail->next = node;
+		node->prev = stock->tail;
+		stock->tail = node;
+	}
+}
+
+/*************** Static Functions ****************/
+
+static void printApt(APT* apt) {
+
+	struct tm* info;
+	char buffer[80];
+	info = localtime(&apt->database_Entry_Date);
+	strftime(buffer, 80, "%x", info);
+	uint month = atoi(strtok(buffer, "/"));
+	uint day = atoi(strtok(NULL, "/"));
+	uint year = 2000 + atoi(strtok(NULL, "/"));
+	printf("Address: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d\n",
+		apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
+	if (apt->next)
+		printApt(apt->next);
+}
+
+static void printOnlyCodesRec(APT* apt) {
+
+	if (apt)
+		printf("%d\n", apt->code);
+	if (apt->next)
+		printOnlyCodesRec(apt->next);
+}
+
+static void removeInnerNode(APT* node) {
+
+	node->prev->next = node->next;
+	node->next->prev = node->prev;
+	free(node);
+}
+
+static void removeHead(APT_LIST* apt) {
+
+	apt->head = apt->head->next;
+	free(apt->head->prev);
+	apt->head->prev = NULL;
+}
+
+static void removeTail(APT_LIST* apt) {
+
+	apt->tail = apt->tail->prev;
+	free(apt->tail->next);
+	apt->tail->next = NULL;
+}
+
+static void freeFunctionListRec(FIND_FUNCTION_NODE* head) {
+
+	if (head->next)
+		freeFunctionListRec(head->next);
+	free(head);
 }

@@ -1,4 +1,7 @@
-34
+37
+23find-apt -MinNumRooms 8
+17find-apt -Enter 1
+17find-apt -Enter 0
 60find-apt -MinNumRooms 3 -MaxNumRooms 5 -MaxPrice 1750000 -sr
 51add-apt "Dizengoff 180 Tel Aviv" 2000000 4 28 09 20
 26find-apt -MaxPrice 1500000

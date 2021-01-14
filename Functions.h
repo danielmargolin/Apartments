@@ -53,11 +53,11 @@ void allocationCheck(void* x);
 
 DATE makeDate(char* d);
 
-void addToStock(STOCK* stock, char* command);
-
 void sortList(APT_LIST* apt, char* type, char order);
 
 APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList);
+
+void addToStock(STOCK* stock, char* command);
 
 #endif
 
