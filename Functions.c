@@ -58,13 +58,20 @@ void findApt(FILE* f_ptr, APT_LIST* aptList, char* command) {
 	char sort = '\0';
 	FIND_FUNCTIONS_LIST functionsLst;
 	functionsLst = getFindFunctions(command + 8, &sort);
+
 	APT_LIST filtered_List;
 	makeEmptyAptList(&filtered_List);
 	filtered_List = executeFindFunctions(functionsLst, aptList);
+
 	if (sort)
 		sortList(&filtered_List, "Price", sort);
 
 	filtered_List.head->prev = filtered_List.tail->next = NULL;
+
+	/*This if statement was added in order to handle a scenario in which: 
+	The user enters just 'find-apt -Enter 7' (instead of 'find-apt -Enter 7 -MaxPrice 1020000' for example).
+	In this case, we should only show the apartement's codes (and not the entire data)
+	For the full explaination, please check the following thread: https://mama.mta.ac.il/mod/forum/discuss.php?d=8059*/
 	if (functionsLst.size == 1 && functionsLst.head->function == &findLastDays && functionsLst.head->param != -2)
 		printOnlyCodes(&filtered_List);
 	else
@@ -387,7 +394,7 @@ void sortList(APT_LIST* apt, char* type, char order) {
 
 FIND_FUNCTIONS_LIST getFindFunctions(char* command, char* sort) {
 
-	FIND_FUNCTIONS_LIST functionsLst;
+	FIND_FUNCTIONS_LIST functionsLst; /* Will store the references of the find functions and their params.*/
 	makeEmptyFindFunctionList(&functionsLst);
 	char* currentWord = strtok(command, DELIMETERS);
 
@@ -423,11 +430,14 @@ FIND_FUNCTIONS_LIST getFindFunctions(char* command, char* sort) {
 			FIND_FUNCTION_NODE* node = makeFindFunctionNode(&findDate, atoi(strtok(NULL, DELIMETERS)));
 			addToFunctionList(&functionsLst, node);
 		}
+
+		// These if statements will check whether or not the aparments should be sorted.
 		else if (strcmp(currentWord, "sr") == 0)
 			(*sort) = 'r';
 
 		else if (strcmp(currentWord, "s") == 0)
 			(*sort) = 's';
+		//--------------------------------------------------------
 
 		currentWord = strtok(NULL, DELIMETERS);
 	}
@@ -446,6 +456,9 @@ APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList) {
 
 		if (!filtered_List.head)
 			return filtered_List;
+
+		// Will apply the each find function (and it's params) on the filtered list.
+		// Each function is being applied on the previous function's result.
 		APT_LIST(*findFunction)(APT_LIST, int*);
 		findFunction = head->function;
 		filtered_List = (*findFunction)(filtered_List, head->param);
@@ -552,33 +565,33 @@ static void printHistory(STOCK* stock) {
 	printShortHistory(i);
 }
 
-static char* replaceWord(const char* s, const char* oldW, const char* newW) {
+static char* replaceWord(char* originalStr, char* strToReplace, char* strToReplaceWith) {
 
 	char* result;
-	int i, cnt = 0;
-	int newWlen = strlen(newW);
-	int oldWlen = strlen(oldW);
+	int i, count = 0;
+	int strToReplaceWithLen = strlen(strToReplaceWith);
+	int strToReplaceLen = strlen(strToReplace);
 
-	for (i = 0; i < strlen(s) && s[i]; i++) {
+	for (i = 0; i < strlen(originalStr) && originalStr[i]; i++) {
 
-		if (strstr(&s[i], oldW) == &s[i]) {
+		if (strstr(&originalStr[i], strToReplace) == &originalStr[i]) {
 
-			cnt++;
-			i += oldWlen - 1;
+			count++;
+			i += strToReplaceLen - 1;
 		}
 	}
-	result = (char*)malloc(i + cnt * (newWlen - oldWlen) + 1);
+	result = (char*)malloc(i + count * (strToReplaceWithLen - strToReplaceLen) + 1);
 
 	i = 0;
-	while (*s) {
-		if (strstr(s, oldW) == s) {
+	while (*originalStr) {
+		if (strstr(originalStr, strToReplace) == originalStr) {
 
-			strcpy(&result[i], newW);
-			i += newWlen;
-			s += oldWlen;
+			strcpy(&result[i], strToReplaceWith);
+			i += strToReplaceWithLen;
+			originalStr += strToReplaceLen;
 		}
 		else
-			result[i++] = *s++;
+			result[i++] = *originalStr++;
 	}
 	result[i] = '\0';
 	return result;
