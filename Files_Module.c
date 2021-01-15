@@ -104,35 +104,6 @@ void writeCommands(STOCK* stock) {
 	fclose(f_ptr);
 }
 
-void printListToFile(FILE* f_ptr, APT_LIST* lst) {
-
-	printf("%d\n", ftell(f_ptr));
-	//fseek(f_ptr, 0, SEEK_CUR);
-	//if (lst->head)
-	//	printAptToFile(f_ptr, lst->head);
-	//else
-	//	fputs("There are no such apartments in the database", f_ptr);
-
-	//fputs("\nGood Bye!", f_ptr);
-
-}
-
-void printAptToFile(FILE* f_ptr, APT* apt) {
-
-	
-	struct tm* info;
-	char buffer[80];
-	info = localtime(&apt->database_Entry_Date);
-	strftime(buffer, 80, "%x", info);
-	uint month = atoi(strtok(buffer, "/"));
-	uint day = atoi(strtok(NULL, "/"));
-	uint year = 2000 + atoi(strtok(NULL, "/"));
-	fprintf(f_ptr, "Apt details:\nCode: %d\nAddress: %s\nNumber of rooms: %d\nPrice: %d\nEntry date: %d.%d.%d\nDatabase entry date: %d.%d.%d\n",
-		apt->code, apt->address, apt->rooms, apt->price, apt->date.day, apt->date.month, apt->date.year, day, month, year);
-	if (apt->next)
-		printAptToFile(f_ptr, apt->next);
-}
-
 APT_LIST fillApts(FILE* fB_ptr) {
 
 	APT_LIST lst;

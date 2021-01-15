@@ -33,9 +33,9 @@ static uint checkDate(APT* cur, int day, int month, int year);
 static int sortByDataBase(const void* element1, const void* element2);
 static double secondsSinceMidnight(int days);
 static void splitAndDelete(APT_LIST* lst, APT_LIST* lstToDelete, APT* cur);
-static void queuePull(uint position, STOCK* stock);
-static int savingCommands(char* command);
-static uint getCode(APT_LIST* aptList);
+static int savingCommands(const char* command);
+static uint getCode(const APT_LIST* aptList);
+static struct tm changeDate(struct tm date, int days);
 
 /*************** Public Functions ****************/
 void getCommand(FILE *f_ptr, APT_LIST* aptList, STOCK* stock) {
@@ -51,6 +51,107 @@ void getCommand(FILE *f_ptr, APT_LIST* aptList, STOCK* stock) {
 		
 	}
 	free(command);
+}
+
+void findApt(FILE* f_ptr, APT_LIST* aptList, char* command) {
+
+	char sort = '\0';
+	FIND_FUNCTIONS_LIST functionsLst;
+	functionsLst = getFindFunctions(command + 8, &sort);
+	APT_LIST filtered_List;
+	makeEmptyAptList(&filtered_List);
+	filtered_List = executeFindFunctions(functionsLst, aptList);
+	if (sort)
+		sortList(&filtered_List, "Price", sort);
+
+	filtered_List.head->prev = filtered_List.tail->next = NULL;
+	if (functionsLst.size == 1 && functionsLst.head->function == &findLastDays && functionsLst.head->param != -2)
+		printOnlyCodes(&filtered_List);
+	else
+		printList(f_ptr, &filtered_List);
+
+	freeFunctionList(&functionsLst);
+	freeList(&filtered_List);
+}
+
+void addApt(APT_LIST* aptList, char* command) {
+
+	aptList->size++;
+	char* temp = (char*)calloc(strlen(command), sizeof(char));
+	strcpy(temp, command);
+	strtok(temp, ADDRESS_DELIMETERS);
+	char* address = strtok(NULL, ADDRESS_DELIMETERS);
+	int price;
+	price = atoi(strtok(NULL, DELIMETERS));
+	int rooms = atoi(strtok(NULL, DELIMETERS));
+	char* d = strtok(NULL, "\0");
+	DATE date = makeDate(d);
+	time_t now;
+	time(&now);
+	addToHead(aptList, makeApt(address, getCode(aptList), price, rooms, date, now));
+}
+
+void buy(APT_LIST* aptList, char* command) {
+
+	APT* cur = aptList->head;
+	uint code = (uint)atoi(command), i;
+
+	for (i = 0; i < aptList->size && cur; i++) {
+
+		if (cur->code == code) {
+
+			removeNode(aptList, cur);
+			aptList->size--;
+			return;
+		}
+		cur = cur->next;
+	}
+	if (!cur)
+		printf("The apartment was not found\n");
+}
+
+void deleteApt(APT_LIST* aptList, char* command) {
+
+	uint days = (DAYS_TO_SECONDS * atoi(command)), i;
+	APT* cur = aptList->tail;
+	APT_LIST lst_To_Delete;
+	makeEmptyAptList(&lst_To_Delete);
+	lst_To_Delete.head = aptList->head;
+	time_t now;
+	time(&now);
+	uint count = 0;
+	for (i = 0; i < aptList->size && cur; i++) {
+
+		if (difftime(now, cur->database_Entry_Date) <= days) {
+
+			lst_To_Delete.tail = cur;
+			if (cur->next) {
+
+				aptList->head = cur->next;
+				cur->next->prev = NULL;
+				cur->next = NULL;
+			}
+			freeList(&lst_To_Delete);
+			if (!count)
+				makeEmptyAptList(aptList);
+			else
+				aptList->size = count;
+		}
+		count++;
+		cur = cur->prev;
+	}
+}
+
+void other(FILE* f_ptr, APT_LIST* aptList, STOCK* stock, char* command) {
+
+	if (strcmp(command, "short_history") == 0)
+		printShortHistory(stock->size);
+	else if (strcmp(command, "history") == 0)
+		printHistory(stock);
+	else if (strcmp(command, "!!") == 0)
+		lastCommand(f_ptr, aptList, stock);
+	else
+		changePastCommands(f_ptr, aptList, stock, command);
 }
 
 void addToStock(FILE* f_ptr, STOCK* stock, char* command) {
@@ -165,14 +266,6 @@ APT_LIST findDate(APT_LIST apt, int param) {
 	return apt;
 }
 
-static uint checkDate(APT* cur, int day, int month, int year) {
-
-	if (cur->date.year > year || (cur->date.year == year && cur->date.month > month)
-		|| (cur->date.year == year && cur->date.month == month && cur->date.day > day))
-		return TRUE;
-	return FALSE;
-}
-
 APT_LIST findMaxRooms(APT_LIST apt, int param) {
 
 	sortList(&apt, "Rooms", 'r');
@@ -225,40 +318,6 @@ APT_LIST findMinRooms(APT_LIST apt, int param) {
 	return apt;
 }
 
-void sortList(APT_LIST* apt, char* type, char order) {
-
-	uint i;
-	APT* cur = apt->head;
-	APT** arr;
-	arr = listToArr(apt);
-
-	if (strcmp(type, "Price") == 0) {
-
-		if (order == 'r')
-			qsort(arr, apt->size, sizeof(APT*), &reverseSortByPrice);
-		else
-			qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
-	}
-	else if (strcmp(type, "Date") == 0) {
-
-		if (order == 'r')
-			qsort(arr, apt->size, sizeof(APT*), &reverseSortByDate);
-		else
-			qsort(arr, apt->size, sizeof(APT*), &sortByDate);
-	}
-	else if (strcmp(type, "Rooms") == 0) {
-
-		if (order == 'r')
-			qsort(arr, apt->size, sizeof(APT*), &reverseSortByRooms);
-		else
-			qsort(arr, apt->size, sizeof(APT*), &sortByRooms);
-	}
-	else if (strcmp(type, "DataBaseDate") == 0)
-			qsort(arr, apt->size, sizeof(APT*), &sortByDataBase);
-
-	arrToList(arr, apt);
-}
-
 APT_LIST findLastDays(APT_LIST apt, int param) {
 
 	if (param == -2)
@@ -292,13 +351,38 @@ APT_LIST findLastDays(APT_LIST apt, int param) {
 	return apt;
 }
 
-static void splitAndDelete(APT_LIST* lst, APT_LIST* lstToDelete, APT* cur) {
+void sortList(APT_LIST* apt, char* type, char order) {
 
-	lst->head = cur;
-	lstToDelete->tail = cur->prev;
-	lst->head->prev = NULL;
-	lstToDelete->tail->next = NULL;
-	freeList(lstToDelete);
+	uint i;
+	APT* cur = apt->head;
+	APT** arr;
+	arr = listToArr(apt);
+
+	if (strcmp(type, "Price") == 0) {
+
+		if (order == 'r')
+			qsort(arr, apt->size, sizeof(APT*), &reverseSortByPrice);
+		else
+			qsort(arr, apt->size, sizeof(APT*), &sortByPrice);
+	}
+	else if (strcmp(type, "Date") == 0) {
+
+		if (order == 'r')
+			qsort(arr, apt->size, sizeof(APT*), &reverseSortByDate);
+		else
+			qsort(arr, apt->size, sizeof(APT*), &sortByDate);
+	}
+	else if (strcmp(type, "Rooms") == 0) {
+
+		if (order == 'r')
+			qsort(arr, apt->size, sizeof(APT*), &reverseSortByRooms);
+		else
+			qsort(arr, apt->size, sizeof(APT*), &sortByRooms);
+	}
+	else if (strcmp(type, "DataBaseDate") == 0)
+			qsort(arr, apt->size, sizeof(APT*), &sortByDataBase);
+
+	arrToList(arr, apt);
 }
 
 FIND_FUNCTIONS_LIST getFindFunctions(char* command, char* sort) {
@@ -368,115 +452,6 @@ APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList) {
 		head = head->next;
 	}
 	return filtered_List;
-}
-
-void findApt(FILE* f_ptr, APT_LIST* aptList, char* command) {
-
-	char sort = '\0';
-	FIND_FUNCTIONS_LIST functionsLst;
-	functionsLst = getFindFunctions(command + 8, &sort);
-	APT_LIST filtered_List;
-	makeEmptyAptList(&filtered_List);
-	filtered_List = executeFindFunctions(functionsLst, aptList);
-	if (sort)
-		sortList(&filtered_List, "Price", sort);
-
-	filtered_List.head->prev = filtered_List.tail->next = NULL;
-	if (functionsLst.size == 1 && functionsLst.head->function == &findLastDays && functionsLst.head->param != -2)
-		printOnlyCodes(&filtered_List);
-	else
-		printList(f_ptr, &filtered_List);
-
-	freeFunctionList(&functionsLst);
-	freeList(&filtered_List);
-}
-
-void addApt(APT_LIST* aptList, char* command) {
-
-	aptList->size++;
-	char* temp = (char*)calloc(strlen(command), sizeof(char));
-	strcpy(temp, command);
-	strtok(temp, ADDRESS_DELIMETERS);
-	char* address = strtok(NULL, ADDRESS_DELIMETERS);
-	int price;
-	price = atoi(strtok(NULL, DELIMETERS));
-	int rooms = atoi(strtok(NULL, DELIMETERS));
-	char* d = strtok(NULL, "\0");
-	DATE date = makeDate(d);
-	time_t now;
-	time(&now);
-	addToHead(aptList, makeApt(address, getCode(aptList), price, rooms, date, now));
-}
-
-static uint getCode(APT_LIST* aptList) {
-
-	if (aptList->head)
-		return aptList->head->code + 1;
-	else
-		return 1;
-}
-
-void buy(APT_LIST* aptList, char* command) {
-
-	APT* cur = aptList->head;
-	uint code = (uint)atoi(command), i;
-
-	for (i = 0; i < aptList->size && cur; i++) {
-
-		if (cur->code == code) {
-
-			removeNode(aptList, cur);
-			aptList->size--;
-			return;
-		}
-		cur = cur->next;
-	}
-	if (!cur)
-		printf("The apartment was not found\n");
-}
-
-void deleteApt(APT_LIST* aptList, char* command) {
-
-	uint days = (DAYS_TO_SECONDS * atoi(command)), i;
-	APT* cur = aptList->tail;
-	APT_LIST lst_To_Delete;
-	makeEmptyAptList(&lst_To_Delete);
-	lst_To_Delete.head = aptList->head;
-	time_t now;
-	time(&now);
-	uint count = 0;
-	for (i = 0; i < aptList->size && cur; i++) {
-
-		if (difftime(now, cur->database_Entry_Date) <= days) {
-
-			lst_To_Delete.tail = cur;
-			if (cur->next) {
-
-				aptList->head = cur->next;
-				cur->next->prev = NULL;
-				cur->next = NULL;
-			}
-			freeList(&lst_To_Delete);
-			if (!count)
-				makeEmptyAptList(aptList);
-			else
-				aptList->size = count;
-		}
-		count++;
-		cur = cur->prev;
-	}
-}
-
-void other(FILE* f_ptr, APT_LIST* aptList, STOCK* stock, char* command) {
-
-	if (strcmp(command, "short_history") == 0)
-		printShortHistory(stock->size);
-	else if (strcmp(command, "history") == 0)
-		printHistory(stock);
-	else if (strcmp(command, "!!") == 0)
-		lastCommand(f_ptr, aptList, stock);
-	else
-		changePastCommands(f_ptr, aptList, stock, command);
 }
 
 DATE makeDate(char* d) {
@@ -549,30 +524,6 @@ static void queuePush(uint position, char* command) {
 	}
 	short_term_history[0] = (char*)realloc(short_term_history[0], strlen(command));
 	short_term_history[0][strlen(command)] = '\0';
-}
-
-static void queuePull(uint position, STOCK* stock) {
-
-	uint i;
-	for (i = 0; i < position-1; i++) {
-
-		short_term_history[i] = (char*)realloc(short_term_history[i], strlen(short_term_history[i + 1]));
-		short_term_history[i][strlen(short_term_history[i + 1])] = '\0';
-		strcpy(short_term_history[i], short_term_history[i + 1]);
-	}
-	if ((position == N) && (stock->head)) {
-
-		short_term_history[position - 1] = (char*)realloc(short_term_history[position - 1], strlen(stock->head->command));
-		short_term_history[position - 1][strlen(stock->head->command)] = '\0';
-		strcpy(short_term_history[position - 1], stock->head->command);
-		deletehead(stock);
-		stock->size--;
-	}
-	else {
-
-		short_term_history[position - 1] = (char*)realloc(short_term_history[position - 1], 1);
-		short_term_history[position - 1] = '\0';
-	}
 }
 
 static void printShortHistory(int start) {
@@ -783,22 +734,8 @@ static double secondsSinceMidnight(int days) {
 	struct tm* n;
 	n = localtime(&now);
 	info = (*n);
+	info = changeDate(info, days);
 	info.tm_hour = info.tm_min = info.tm_sec = 0;
-	if (info.tm_mday - days <= 0) {
-
-		if (info.tm_mon < 0) {
-
-			info.tm_year--;
-			info.tm_mon = 11;
-		}
-		else {
-
-			info.tm_mon--;
-			info.tm_mday = 31 - (days - info.tm_mday);
-		}
-	}
-	else
-		info.tm_mday -= days;
 	ret = mktime(&info);
 	if (ret == -1) {
 
@@ -809,10 +746,55 @@ static double secondsSinceMidnight(int days) {
 	return difftime(now, mid);
 }
 
-static int savingCommands(char* command) {
+static struct tm changeDate(struct tm date, int days) {
+
+	if (date.tm_mday - days <= 0) {
+
+		if (date.tm_mon < 0) {
+
+			date.tm_year--;
+			date.tm_mon = 11;
+		}
+		else {
+
+			date.tm_mon--;
+			date.tm_mday = 31 - (days - date.tm_mday);
+		}
+	}
+	else
+		date.tm_mday -= days;
+	return date;
+}
+
+static int savingCommands(const char* command) {
 
 	if ((!strncmp(command, FIND, strlen(FIND))) || (!strncmp(command, ADD, strlen(ADD))) ||
 		(!strncmp(command, BUY, strlen(BUY))) || (!strncmp(command, DELETE, strlen(DELETE))))
 		return TRUE;
 	return FALSE;
+}
+
+static uint checkDate(APT* cur, int day, int month, int year) {
+
+	if (cur->date.year > year || (cur->date.year == year && cur->date.month > month)
+		|| (cur->date.year == year && cur->date.month == month && cur->date.day > day))
+		return TRUE;
+	return FALSE;
+}
+
+static void splitAndDelete(APT_LIST* lst, APT_LIST* lstToDelete, APT* cur) {
+
+	lst->head = cur;
+	lstToDelete->tail = cur->prev;
+	lst->head->prev = NULL;
+	lstToDelete->tail->next = NULL;
+	freeList(lstToDelete);
+}
+
+static uint getCode(const APT_LIST* aptList) {
+
+	if (aptList->head)
+		return aptList->head->code + 1;
+	else
+		return 1;
 }
