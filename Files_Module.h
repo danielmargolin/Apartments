@@ -42,7 +42,7 @@ APT_LIST fillApts(FILE* fB_ptr);
 
 void openAndFill(FILE* fT_ptr, FILE* fB_ptr, STOCK* stock, APT_LIST* aptList);
 
-void printListToFile(APT_LIST* lst);
+void printListToFile(FILE* f_ptr, APT_LIST* lst);
 
 void printAptToFile(FILE* f_ptr, APT* apt);
 

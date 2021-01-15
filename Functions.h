@@ -23,9 +23,9 @@
 
 /*************** Functions Prototypes ****************/
 
-void getCommand(APT_LIST* aptList, STOCK* stock);
+void getCommand(FILE* f_ptr, APT_LIST* aptList, STOCK* stock);
 
-void findApt(APT_LIST* aptList, char* command);
+void findApt(FILE* f_ptr, APT_LIST* aptList, char* command);
 
 APT_LIST findMaxPrice(APT_LIST apt, int param);
 
@@ -47,7 +47,7 @@ void buy(APT_LIST* aptList, char* command);
 
 void deleteApt(APT_LIST* aptList, char* command);
 
-void other(APT_LIST* aptList, STOCK* stock, char* command);
+void other(FILE* f_ptr, APT_LIST* aptList, STOCK* stock, char* command);
 
 void allocationCheck(void* x);
 
@@ -57,7 +57,7 @@ void sortList(APT_LIST* apt, char* type, char order);
 
 APT_LIST executeFindFunctions(FIND_FUNCTIONS_LIST lst, APT_LIST* aptList);
 
-void addToStock(STOCK* stock, char* command);
+void addToStock(FILE* f_ptr, STOCK* stock, char* command);
 
 #endif
 

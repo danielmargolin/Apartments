@@ -104,44 +104,6 @@ void writeCommands(STOCK* stock) {
 	fclose(f_ptr);
 }
 
-void printListToFile(APT_LIST* lst) {
-
-	FILE* f_ptr = fopen("Printing_Tests.txt", "w");
-	if (!lst->size) {
-
-		fputs("EMPTY", f_ptr);
-		return;
-	}
-	else {
-
-		APT* cur = lst->head;
-		uint i;
-		for (i = 0; i < lst->size && cur; i++) {
-
-			printAptToFile(f_ptr, cur);
-			cur = cur->next;
-		}
-	}
-	fprintf(f_ptr, "\nGood Bye!");
-	fclose(f_ptr);
-}
-
-void printAptToFile(FILE* f_ptr, APT* apt) {
-
-	
-	struct tm* info;
-	char buffer[80];
-	info = localtime(&apt->database_Entry_Date);
-	strftime(buffer, 80, "%x", info);
-	uint month = atoi(strtok(buffer, "/"));
-	uint day = atoi(strtok(NULL, "/"));
-	uint year = 2000 + atoi(strtok(NULL, "/"));
-	fprintf(f_ptr, "Apt details:\nCode: %d\nAddress: %s\nRooms: %d\nPrice: %d\nEntry date: %d.%d.%d\nDatabase entry date: %d.%d.%d\n",
-		apt->code, apt->address, apt->rooms, apt->price, apt->date.day, apt->date.month, apt->date.year, day, month, year);
-	//printf("\n*************\nAddress: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d",
-	//	apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
-}
-
 APT_LIST fillApts(FILE* fB_ptr) {
 
 	APT_LIST lst;
