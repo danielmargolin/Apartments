@@ -15,7 +15,7 @@
 /*************** Static Functions Prototypes ****************/
 
 static void printOnlyCodesRec(APT* apt);
-static void printApt(APT* apt);
+static void printApt(FILE* f_ptr, APT* apt);
 static void removeInnerNode(APT* node);
 static void removeHead(APT_LIST* apt);
 static void removeTail(APT_LIST* apt);
@@ -123,10 +123,10 @@ APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_
 	return apt;
 }
 
-void printList(APT_LIST* lst) {
+void printList(FILE* f_ptr, APT_LIST* lst) {
 
 	if (lst->head)
-		printApt(lst->head);
+		printApt(f_ptr, lst->head);
 	else
 		puts("There are no such apartments in the database");
 }
@@ -276,7 +276,7 @@ void addToTailStockList(STOCK* stock, STOCK_NODE* node) {
 
 /*************** Static Functions ****************/
 
-static void printApt(APT* apt) {
+static void printApt(FILE* f_ptr, APT* apt) {
 
 	struct tm* info;
 	char buffer[80];
@@ -285,10 +285,12 @@ static void printApt(APT* apt) {
 	uint month = atoi(strtok(buffer, "/"));
 	uint day = atoi(strtok(NULL, "/"));
 	uint year = 2000 + atoi(strtok(NULL, "/"));
-	printf("Address: %s\nPrice: %d\nCode: %d\nRooms: %d\nDate: %d.%d.%d\nDatabase entry date: %d.%d.%d\n",
-		apt->address, apt->price, apt->code, apt->rooms, apt->date.day, apt->date.month, apt->date.year, day, month, year);
+	printf("Apt details:\nCode: %d\nAddress: %s\nNumber of rooms: %d\nPrice: %d\nEntry date: %d.%d.%d\nDatabase entry date: %d.%d.%d\n",
+		apt->code, apt->address, apt->rooms, apt->price, apt->date.day, apt->date.month, apt->date.year, day, month, year);
+	fprintf(f_ptr, "Apt details:\nCode: %d\nAddress: %s\nNumber of rooms: %d\nPrice: %d\nEntry date: %d.%d.%d\nDatabase entry date: %d.%d.%d\n",
+		apt->code, apt->address, apt->rooms, apt->price, apt->date.day, apt->date.month, apt->date.year, day, month, year);
 	if (apt->next)
-		printApt(apt->next);
+		printApt(f_ptr, apt->next);
 }
 
 static void printOnlyCodesRec(APT* apt) {

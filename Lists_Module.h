@@ -37,7 +37,7 @@ void makeEmptyAptList(APT_LIST* lst);
 
 APT* makeApt(char* ad, unsigned int code, int price, int rooms, DATE date, time_t database_Entry_Date);
 
-void printList(APT_LIST* lst);
+void printList(FILE* f_ptr, APT_LIST* lst);
 
 void printOnlyCodes(APT_LIST* lst);
 

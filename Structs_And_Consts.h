@@ -51,7 +51,7 @@ typedef unsigned char uchar;
 
 #define BUY "buy-apt"
 
-#define DELETE "delete-apt –Enter"
+#define DELETE "delete-apt"
 
 #define DELIMETERS " -\n\t"
 
